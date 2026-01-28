@@ -1,12 +1,19 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from motor.motor_asyncio import AsyncIOMotorClient
+from cobblemon_academy_tracker_api.database import connect_to_mongo, close_mongo_connection
+from cobblemon_academy_tracker_api.routers import players, leaderboards
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await connect_to_mongo()
+    yield
+    await close_mongo_connection()
 
-# Placeholder for MongoDB connection
-# client = AsyncIOMotorClient("mongodb://localhost:27017")
-# db = client.cobblemon_academy
+app = FastAPI(lifespan=lifespan)
+
+app.include_router(players.router)
+app.include_router(leaderboards.router)
 
 @app.get("/")
 async def read_root():
-    return {"message": "Hello World"}
+    return {"message": "Cobblemon Academy Tracker API"}
