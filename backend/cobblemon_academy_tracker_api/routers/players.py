@@ -14,6 +14,11 @@ async def get_player_summary(uuid: str):
     if not player_doc:
         raise HTTPException(status_code=404, detail="Player not found")
     
+    from cobblemon_academy_tracker_api.services import resolve_username
+    
+    real_username = await resolve_username(uuid)
+    player_doc["username"] = real_username
+    
     return PlayerSummary(**player_doc)
 
 @router.get("/{uuid}/party", response_model=List[Pokemon])

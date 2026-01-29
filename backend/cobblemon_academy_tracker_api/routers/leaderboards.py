@@ -53,12 +53,15 @@ async def get_leaderboard(category: str, limit: int = 10):
         
     cursor = collection.aggregate(pipeline)
     
+    from cobblemon_academy_tracker_api.services import resolve_username
+    
     results = []
     rank = 1
     async for doc in cursor:
+        username = await resolve_username(doc["uuid"])
         results.append(LeaderboardEntry(
             uuid=doc["uuid"],
-            username=doc.get("username"),
+            username=username,
             value=doc.get("value", 0),
             rank=rank
         ))
