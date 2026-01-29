@@ -5,7 +5,7 @@ import { Search, Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
-import { api, type LeaderboardEntry } from "../../lib/api_client";
+import { api, type LeaderboardEntry } from "../../api";
 
 export function Topbar() {
     const [theme, setTheme] = useState<"light" | "dark">("dark");

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { api, type PlayerSummary, type PlayerPartyMember, type Pokemon } from "../lib/api_client";
+import { api, type PlayerSummary, type PlayerPartyMember, type Pokemon } from "../api";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
