@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { api, type LeaderboardEntry } from "@/lib/api";
+import { api, type LeaderboardEntry } from "../lib/api";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Crown, Sparkles, Swords, Trophy, Egg, Dna } from "lucide-react";

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { api, type PlayerSummary, type PlayerPartyMember, type Pokemon } from "@/lib/api";
+import { api, type PlayerSummary, type PlayerPartyMember, type Pokemon } from "../lib/api";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -164,7 +164,7 @@ export default function PlayerProfile() {
                                                 <div className="text-2xl font-bold">{ace.species}</div>
                                                 <Badge variant="outline" className="border-primary/50 text-primary bg-primary/5">Lvl {ace.level}</Badge>
                                                 <div className="flex gap-1 mt-2">
-                                                    {ace.types.map(t => <Badge key={t} className="text-xs">{t}</Badge>)}
+                                                    {ace.types.map((t: string) => <Badge key={t} className="text-xs">{t}</Badge>)}
                                                 </div>
                                                 <div className="text-sm text-muted-foreground mt-1">
                                                     Nature: <span className="text-foreground font-medium">{ace.nature}</span>
@@ -218,7 +218,7 @@ export default function PlayerProfile() {
                                 </CardHeader>
                                 <CardContent>
                                     {party.length > 0 ? (() => {
-                                        const typeCounts = party.flatMap(p => p.types).reduce((acc, type) => {
+                                        const typeCounts = party.flatMap(p => p.types).reduce((acc: Record<string, number>, type: string) => {
                                             acc[type] = (acc[type] || 0) + 1;
                                             return acc;
                                         }, {} as Record<string, number>);

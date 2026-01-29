@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Search, History, Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { api, type LeaderboardEntry } from "@/lib/api";
+import { api, type LeaderboardEntry } from "../lib/api";
 
 export default function Players() {
     const [query, setQuery] = useState("");
