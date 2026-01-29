@@ -268,7 +268,7 @@ export default function PlayerProfile() {
                                         <div className="text-xs text-muted-foreground">Lvl {poke.level}</div>
                                     </div>
                                     <div className="mt-2 flex gap-1">
-                                        {poke.types?.map(t => (
+                                        {poke.types?.map((t: string) => (
                                             <Badge key={t} variant="outline" className="text-[10px] px-1.5 py-0 h-5">{t}</Badge>
                                         ))}
                                     </div>
