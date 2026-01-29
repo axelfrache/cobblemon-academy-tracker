@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Copy, Sparkles, Trophy, Swords, Egg, Search, Star } from "lucide-react";
+import { Copy, Sparkles, Trophy, Swords, Egg, Search, Star, type LucideIcon } from "lucide-react";
 import { cn, getAvatarUrl } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import {
@@ -366,7 +366,7 @@ export default function PlayerProfile() {
     );
 }
 
-function QuickStat({ label, value, icon: Icon, className }: { label: string, value: string | number, icon: any, className?: string }) {
+function QuickStat({ label, value, icon: Icon, className }: { label: string, value: string | number, icon: LucideIcon, className?: string }) {
     return (
         <Card className="flex flex-col items-center justify-center p-4 py-6 gap-2 hover:bg-muted/50 transition-colors">
             <Icon className={cn("h-5 w-5 mb-1", className)} />

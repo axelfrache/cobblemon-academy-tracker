@@ -2,15 +2,15 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
-import { api } from "../api";
-import { Trophy, Swords, Sparkles, Search, ArrowRight } from "lucide-react";
+import { api, type LeaderboardEntry } from "../api";
+import { Trophy, Swords, Sparkles, Search, ArrowRight, type LucideIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 interface Highlight {
     category: string;
-    player: any | null; // Changed from LeaderboardEntry to any to maintain syntactical correctness after import change
-    icon: any;
+    player: LeaderboardEntry | null;
+    icon: LucideIcon;
     color: string;
 }
 

@@ -150,7 +150,7 @@ export default function Leaderboards() {
     );
 }
 
-function PodiumAvatar({ entry, rank: _rank, color, ring, size = "normal" }: { entry: LeaderboardEntry, rank: number, color: string, ring: string, size?: "normal" | "large" }) {
+function PodiumAvatar({ entry, color, ring, size = "normal" }: { entry: LeaderboardEntry, rank: number, color: string, ring: string, size?: "normal" | "large" }) {
     const isLarge = size === "large";
     return (
         <div className="flex flex-col items-center gap-1">
