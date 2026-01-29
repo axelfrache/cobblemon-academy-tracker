@@ -33,9 +33,23 @@ export function Sidebar({ className }: SidebarProps) {
         <div className={cn("pb-12 h-screen border-r bg-sidebar hidden lg:block", className)}>
             <div className="space-y-4 py-4">
                 <div className="px-3 py-2">
-                    <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-sidebar-primary">
-                        Academy
-                    </h2>
+                    <div className="mb-6 px-4 flex items-center gap-3 group cursor-pointer">
+                        <div className="relative transition-all duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(234,179,8,0.5)]">
+                            <img
+                                src="/cobblemon-academy-tracker-logo.svg"
+                                alt="Cobblemon Academy"
+                                className="h-10 w-auto transition-opacity duration-300"
+                            />
+                        </div>
+                        <div className="flex flex-col justify-center">
+                            <span className="font-bold text-base leading-none tracking-tight text-sidebar-foreground group-hover:text-primary transition-colors duration-300">
+                                Cobblemon
+                            </span>
+                            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest group-hover:text-primary/80 transition-colors duration-300">
+                                Academy
+                            </span>
+                        </div>
+                    </div>
                     <div className="space-y-1">
                         {navItems.map((item) => (
                             <NavLink
@@ -76,9 +90,23 @@ export function MobileSidebar() {
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 <SheetDescription className="sr-only">Mobile navigation sidebar</SheetDescription>
                 <div className="px-2 py-4">
-                    <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-sidebar-primary">
-                        Academy
-                    </h2>
+                    <div className="mb-6 px-4 flex items-center gap-3 group cursor-pointer">
+                        <div className="relative transition-all duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(234,179,8,0.5)]">
+                            <img
+                                src="/cobblemon-academy-tracker-logo.svg"
+                                alt="Cobblemon Academy"
+                                className="h-10 w-auto transition-opacity duration-300"
+                            />
+                        </div>
+                        <div className="flex flex-col justify-center">
+                            <span className="font-bold text-base leading-none tracking-tight text-sidebar-foreground group-hover:text-primary transition-colors duration-300">
+                                Cobblemon
+                            </span>
+                            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest group-hover:text-primary/80 transition-colors duration-300">
+                                Academy
+                            </span>
+                        </div>
+                    </div>
                     <div className="space-y-1 mt-4">
                         {navItems.map((item) => (
                             <NavLink

@@ -21,7 +21,6 @@ export function Topbar() {
         root.classList.add(theme);
     }, [theme]);
 
-    // Load available players for search (using leaderboard as source)
     useEffect(() => {
         const loadPlayers = async () => {
             const [shiny, captures] = await Promise.all([
@@ -34,7 +33,6 @@ export function Topbar() {
         loadPlayers();
     }, []);
 
-    // Filter suggestions
     useEffect(() => {
         if (!query.trim()) {
             setSuggestions([]);
@@ -44,7 +42,7 @@ export function Topbar() {
         const filtered = allPlayers.filter(p =>
             p.name.toLowerCase().includes(lower) ||
             p.uuid.toLowerCase().includes(lower)
-        ).slice(0, 5); // Limit to 5
+        ).slice(0, 5);
         setSuggestions(filtered);
     }, [query, allPlayers]);
 
@@ -55,7 +53,6 @@ export function Topbar() {
             setShowSuggestions(false);
             setQuery("");
         }
-        // If no suggestions, do directly nothing as requested
     };
 
     const toggleTheme = () => {
@@ -79,9 +76,8 @@ export function Topbar() {
                                 setShowSuggestions(true);
                             }}
                             onFocus={() => setShowSuggestions(true)}
-                            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)} // Delay to allow click
+                            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                         />
-                        {/* Suggestions Dropdown */}
                         {showSuggestions && query && (
                             <div className="absolute top-full left-0 right-0 mt-2 rounded-md border bg-popover text-popover-foreground shadow-md z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                                 {suggestions.length > 0 ? (
