@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Copy, Sparkles, Trophy, Swords, Egg, Search } from "lucide-react";
+import { Copy, Sparkles, Trophy, Swords, Egg, Search, Star } from "lucide-react";
 import { cn, getAvatarUrl } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import {
@@ -142,12 +142,115 @@ export default function PlayerProfile() {
                 </div>
 
                 <TabsContent value="summary" className="space-y-4">
-                    <Card>
-                        <CardHeader><CardTitle>Highlights</CardTitle></CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">Detailed player analysis and historical data charts would go here.</p>
-                        </CardContent>
-                    </Card>
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                        {/* Signature Pokemon Card */}
+                        <Card className="col-span-3 bg-gradient-to-br from-card to-muted/20 border-primary/20">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Star className="h-5 w-5 text-primary fill-primary" />
+                                    Signature Pokémon
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {party.length > 0 ? (() => {
+                                    const ace = [...party].sort((a, b) => b.level - a.level)[0];
+                                    return (
+                                        <div className="flex items-center gap-6">
+                                            <div className="relative h-32 w-32 flex-shrink-0">
+                                                <div className="absolute inset-0 bg-primary/10 rounded-full blur-xl animate-pulse" />
+                                                <img src={ace.sprite} alt={ace.species} className="relative h-32 w-32 object-contain pixelated drop-shadow-md" />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <div className="text-2xl font-bold">{ace.species}</div>
+                                                <Badge variant="outline" className="border-primary/50 text-primary bg-primary/5">Lvl {ace.level}</Badge>
+                                                <div className="flex gap-1 mt-2">
+                                                    {ace.types.map(t => <Badge key={t} className="text-xs">{t}</Badge>)}
+                                                </div>
+                                                <div className="text-sm text-muted-foreground mt-1">
+                                                    Nature: <span className="text-foreground font-medium">{ace.nature}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                })() : (
+                                    <div className="h-32 flex items-center justify-center text-muted-foreground">
+                                        No party data available to determine Ace.
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        {/* Analysis Grid */}
+                        <div className="col-span-4 grid gap-4 grid-cols-2">
+                            <Card>
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-sm font-medium text-muted-foreground">Shiny Luck</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="text-2xl font-bold">
+                                        {summary && summary.shinyCount > 0 ? `1 in ${Math.round(summary.totalCaptures / summary.shinyCount)}` : "N/A"}
+                                    </div>
+                                    <p className="text-xs text-muted-foreground mt-1">Average captures per shiny</p>
+                                    <div className="mt-4 h-2 w-full bg-muted rounded-full overflow-hidden">
+                                        <div className="h-full bg-amber-500" style={{ width: `${Math.min(100, ((summary?.shinyCount || 0) / (summary?.totalCaptures || 1)) * 5000)}%` }} />
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card>
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-sm font-medium text-muted-foreground">Batttle Ratio</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="text-2xl font-bold">
+                                        {summary?.battlesWon ?? 0} Wins
+                                    </div>
+                                    <p className="text-xs text-muted-foreground mt-1">Recorded victories</p>
+                                    <div className="mt-4 h-2 w-full bg-muted rounded-full overflow-hidden">
+                                        <div className="h-full bg-red-500" style={{ width: `${Math.min(100, (summary?.battlesWon || 0) / 10)}%` }} />
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="col-span-2">
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-sm font-medium text-muted-foreground">Training Focus</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    {party.length > 0 ? (() => {
+                                        const typeCounts = party.flatMap(p => p.types).reduce((acc, type) => {
+                                            acc[type] = (acc[type] || 0) + 1;
+                                            return acc;
+                                        }, {} as Record<string, number>);
+                                        const sortedTypes = Object.entries(typeCounts).sort((a, b) => b[1] - a[1]);
+                                        const topType = sortedTypes[0];
+
+                                        if (!topType) {
+                                            return <div className="text-sm text-muted-foreground">Insufficient type data.</div>;
+                                        }
+
+                                        return (
+                                            <div className="flex items-center justify-between">
+                                                <div className="space-y-1">
+                                                    <div className="text-lg font-bold flex items-center gap-2">
+                                                        {topType[0]} Specialist
+                                                    </div>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {topType[1]} of your top 6 Pokémon are {topType[0]} type.
+                                                    </p>
+                                                </div>
+                                                <Badge className="h-10 w-10 rounded-full flex items-center justify-center text-lg">
+                                                    {topType[0][0]}
+                                                </Badge>
+                                            </div>
+                                        )
+                                    })() : (
+                                        <div className="text-sm text-muted-foreground">Insufficient data.</div>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
                 </TabsContent>
 
                 <TabsContent value="party" className="space-y-6">

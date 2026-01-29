@@ -30,7 +30,7 @@ const navItems = [
 
 export function Sidebar({ className }: SidebarProps) {
     return (
-        <div className={cn("pb-12 h-screen border-r bg-sidebar hidden lg:block", className)}>
+        <div className={cn("pb-12 h-screen border-r bg-sidebar hidden lg:block sticky top-0 overflow-y-auto", className)}>
             <div className="space-y-4 py-4">
                 <div className="px-3 py-2">
                     <div className="mb-6 px-4 flex items-center gap-3 group cursor-pointer">
