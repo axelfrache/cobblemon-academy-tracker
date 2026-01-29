@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { api, type PlayerSummary, type PlayerPartyMember, type Pokemon } from "../lib/api";
+import { api, type PlayerSummary, type PlayerPartyMember, type Pokemon } from "../lib/api_client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -218,7 +218,7 @@ export default function PlayerProfile() {
                                 </CardHeader>
                                 <CardContent>
                                     {party.length > 0 ? (() => {
-                                        const typeCounts = party.flatMap(p => p.types).reduce((acc: Record<string, number>, type: string) => {
+                                        const typeCounts: Record<string, number> = party.flatMap(p => p.types).reduce((acc: Record<string, number>, type: string) => {
                                             acc[type] = (acc[type] || 0) + 1;
                                             return acc;
                                         }, {} as Record<string, number>);
