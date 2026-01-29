@@ -1,14 +1,19 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from cobblemon_academy_tracker_api.database import connect_to_mongo, close_mongo_connection
+from cobblemon_academy_tracker_api.database import (
+    connect_to_mongo,
+    close_mongo_connection,
+)
 from cobblemon_academy_tracker_api.routers import players, leaderboards
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await connect_to_mongo()
     yield
     await close_mongo_connection()
+
 
 app = FastAPI(lifespan=lifespan)
 
@@ -29,6 +34,7 @@ app.add_middleware(
 
 app.include_router(players.router)
 app.include_router(leaderboards.router)
+
 
 @app.get("/")
 async def read_root():
