@@ -16,9 +16,9 @@ interface Highlight {
 
 export default function Dashboard() {
     const [highlights, setHighlights] = useState<Highlight[]>([
-        { category: "Pokédex Master", player: null, icon: BookOpen, color: "text-pink-500" },
-        { category: "Battle Champion", player: null, icon: Swords, color: "text-red-500" },
-        { category: "Shiny Hunter", player: null, icon: Sparkles, color: "text-amber-500" },
+        { category: "Professor", player: null, icon: BookOpen, color: "text-pink-500" },
+        { category: "League Champion", player: null, icon: Swords, color: "text-red-500" },
+        { category: "Masuda Master", player: null, icon: Sparkles, color: "text-amber-500" },
     ]);
 
     const [recentSearches, setRecentSearches] = useState<{ name: string, uuid: string, date: number }[]>([]);
@@ -32,9 +32,9 @@ export default function Dashboard() {
             ]);
 
             setHighlights([
-                { category: "Pokédex Master", player: pokedex[0], icon: BookOpen, color: "text-pink-500" },
-                { category: "Battle Champion", player: battles[0], icon: Swords, color: "text-red-500" },
-                { category: "Shiny Hunter", player: shiny[0], icon: Sparkles, color: "text-amber-500" },
+                { category: "Professor", player: pokedex[0], icon: BookOpen, color: "text-pink-500" },
+                { category: "League Champion", player: battles[0], icon: Swords, color: "text-red-500" },
+                { category: "Masuda Master", player: shiny[0], icon: Sparkles, color: "text-amber-500" },
             ]);
         };
 
@@ -77,7 +77,7 @@ export default function Dashboard() {
                                             {item.player.name ?? "Unknown Trainer"}
                                         </Link>
                                         <div className="text-xs text-muted-foreground font-mono">
-                                            {item.player.value} {item.category.includes("Pokédex") ? "species" : item.category.includes("Shiny") ? "shinies" : item.category.includes("Battle") ? "wins" : "caught"}
+                                            {item.player.value} {item.category.includes("Professor") ? "species" : item.category.includes("Masuda") ? "shinies" : item.category.includes("Champion") ? "wins" : "caught"}
                                         </div>
                                     </div>
                                 </div>
