@@ -7,6 +7,7 @@ export interface PlayerSummary {
     totalCaptures: number;
     shinyCount: number;
     battlesWon: number;
+    pokedexCompletion: number;
 }
 
 export interface Pokemon {
@@ -60,7 +61,7 @@ interface BackendPokemon {
 }
 
 export const api = {
-    getLeaderboard: async (category: "shiny" | "captures" | "battles" | "breeders" | "aspects"): Promise<LeaderboardEntry[]> => {
+    getLeaderboard: async (category: "shiny" | "captures" | "battles" | "breeders" | "aspects" | "pokedex"): Promise<LeaderboardEntry[]> => {
         try {
             const res = await fetch(`${BASE_URL}/leaderboards/${category}`);
             if (!res.ok) throw new Error("Failed to fetch leaderboard");
@@ -81,9 +82,10 @@ export const api = {
 
     getPlayerSummary: async (uuid: string): Promise<PlayerSummary | null> => {
         try {
-            const [summaryRes, leaderboard] = await Promise.all([
+            const [summaryRes, leaderboard, pokedexRes] = await Promise.all([
                 fetch(`${BASE_URL}/players/${uuid}/summary`),
-                api.getLeaderboard("captures")
+                api.getLeaderboard("captures"),
+                fetch(`${BASE_URL}/players/${uuid}/pokedex`)
             ]);
 
             if (!summaryRes.ok) return null;
@@ -92,6 +94,12 @@ export const api = {
             const rankEntry = leaderboard.find(e => e.uuid === uuid);
             const rank = rankEntry ? rankEntry.rank : 0;
 
+            let pokedexCompletion = 0;
+            if (pokedexRes.ok) {
+                const pokedexData = await pokedexRes.json();
+                pokedexCompletion = pokedexData.completion_percentage ?? 0;
+            }
+
             return {
                 uuid: data.uuid,
                 name: data.username || "Unknown",
@@ -99,6 +107,7 @@ export const api = {
                 totalCaptures: data.advancementData?.totalCaptureCount ?? 0,
                 shinyCount: data.advancementData?.totalShinyCaptureCount ?? 0,
                 battlesWon: data.advancementData?.totalBattleVictoryCount ?? 0,
+                pokedexCompletion: pokedexCompletion,
             };
         } catch (error) {
             console.error(error);

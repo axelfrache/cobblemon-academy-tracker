@@ -53,7 +53,8 @@ export default function PlayerProfile() {
                     rank: 42,
                     totalCaptures: 850,
                     shinyCount: 12,
-                    battlesWon: 156
+                    battlesWon: 156,
+                    pokedexCompletion: 0
                 });
                 setParty([]);
             } else {
@@ -214,39 +215,28 @@ export default function PlayerProfile() {
 
                             <Card className="col-span-2">
                                 <CardHeader className="pb-2">
-                                    <CardTitle className="text-sm font-medium text-muted-foreground">Training Focus</CardTitle>
+                                    <CardTitle className="text-sm font-medium text-muted-foreground">Pokédex Completion</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    {party.length > 0 ? (() => {
-                                        const typeCounts: Record<string, number> = party.flatMap(p => p.types).reduce((acc: Record<string, number>, type: string) => {
-                                            acc[type] = (acc[type] || 0) + 1;
-                                            return acc;
-                                        }, {} as Record<string, number>);
-                                        const sortedTypes = Object.entries(typeCounts).sort((a, b) => b[1] - a[1]);
-                                        const topType = sortedTypes[0];
-
-                                        if (!topType) {
-                                            return <div className="text-sm text-muted-foreground">Insufficient type data.</div>;
-                                        }
-
-                                        return (
-                                            <div className="flex items-center justify-between">
-                                                <div className="space-y-1">
-                                                    <div className="text-lg font-bold flex items-center gap-2">
-                                                        {topType[0]} Specialist
-                                                    </div>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        {topType[1]} of your top 6 Pokémon are {topType[0]} type.
-                                                    </p>
-                                                </div>
-                                                <Badge className="h-10 w-10 rounded-full flex items-center justify-center text-lg">
-                                                    {topType[0][0]}
-                                                </Badge>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <div className="text-3xl font-bold text-primary">
+                                                {summary?.pokedexCompletion?.toFixed(1) ?? 0}%
                                             </div>
-                                        )
-                                    })() : (
-                                        <div className="text-sm text-muted-foreground">Insufficient data.</div>
-                                    )}
+                                            <Badge variant="secondary" className="text-xs">
+                                                {Math.round((summary?.pokedexCompletion ?? 0) / 100 * 722)} / 722 species
+                                            </Badge>
+                                        </div>
+                                        <div className="h-3 w-full bg-muted rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full bg-gradient-to-r from-pink-500 to-primary transition-all duration-500"
+                                                style={{ width: `${summary?.pokedexCompletion ?? 0}%` }}
+                                            />
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">
+                                            Based on distinct species caught in your Pokédex records.
+                                        </p>
+                                    </div>
                                 </CardContent>
                             </Card>
                         </div>

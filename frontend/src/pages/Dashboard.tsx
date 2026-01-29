@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { api, type LeaderboardEntry } from "../api";
-import { Trophy, Swords, Sparkles, Search, ArrowRight, type LucideIcon } from "lucide-react";
+import { Swords, Sparkles, Search, ArrowRight, BookOpen, type LucideIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
@@ -16,25 +16,25 @@ interface Highlight {
 
 export default function Dashboard() {
     const [highlights, setHighlights] = useState<Highlight[]>([
+        { category: "Pokédex Master", player: null, icon: BookOpen, color: "text-pink-500" },
+        { category: "Battle Champion", player: null, icon: Swords, color: "text-red-500" },
         { category: "Shiny Hunter", player: null, icon: Sparkles, color: "text-amber-500" },
-        { category: "Battle Master", player: null, icon: Swords, color: "text-red-500" },
-        { category: "Master Catcher", player: null, icon: Trophy, color: "text-cyan-500" },
     ]);
 
     const [recentSearches, setRecentSearches] = useState<{ name: string, uuid: string, date: number }[]>([]);
 
     useEffect(() => {
         const fetchHighlights = async () => {
-            const [shiny, battles, captures] = await Promise.all([
-                api.getLeaderboard("shiny"),
+            const [pokedex, battles, shiny] = await Promise.all([
+                api.getLeaderboard("pokedex"),
                 api.getLeaderboard("battles"),
-                api.getLeaderboard("captures")
+                api.getLeaderboard("shiny")
             ]);
 
             setHighlights([
-                { category: "Top Shiny Hunter", player: shiny[0], icon: Sparkles, color: "text-amber-500" },
+                { category: "Pokédex Master", player: pokedex[0], icon: BookOpen, color: "text-pink-500" },
                 { category: "Battle Champion", player: battles[0], icon: Swords, color: "text-red-500" },
-                { category: "Pokedex Master", player: captures[0], icon: Trophy, color: "text-cyan-500" },
+                { category: "Shiny Hunter", player: shiny[0], icon: Sparkles, color: "text-amber-500" },
             ]);
         };
 
@@ -77,7 +77,7 @@ export default function Dashboard() {
                                             {item.player.name ?? "Unknown Trainer"}
                                         </Link>
                                         <div className="text-xs text-muted-foreground font-mono">
-                                            {item.player.value} {item.category.includes("Shiny") ? "shinies" : item.category.includes("Battle") ? "wins" : "caught"}
+                                            {item.player.value} {item.category.includes("Pokédex") ? "species" : item.category.includes("Shiny") ? "shinies" : item.category.includes("Battle") ? "wins" : "caught"}
                                         </div>
                                     </div>
                                 </div>
