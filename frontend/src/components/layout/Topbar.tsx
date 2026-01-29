@@ -60,7 +60,7 @@ export function Topbar() {
     }
 
     return (
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-6 shadow-sm backdrop-blur-md bg-opacity-80">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-6 backdrop-blur-md bg-opacity-80">
             <MobileSidebar />
             <div className="w-full flex-1">
                 <form onSubmit={handleSearch}>
