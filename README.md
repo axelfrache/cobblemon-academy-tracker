@@ -30,6 +30,21 @@ The application is divided into 2 parts:
 - Node.js 20+
 - Docker & Docker Compose (optional but recommended)
 
+## Configuration
+
+This project uses environment variables for configuration.
+
+1. Copy the example environment file:
+   ```bash
+   cp .env.example .env
+   ```
+2. Edit `.env` to match your local setup (e.g., MongoDB credentials).
+
+| Variable | Description |
+|----------|-------------|
+| `MONGO_URL` | Connection string for MongoDB |
+| `DB_NAME` | Name of the database (default: `cobblemon`) |
+
 ## Running
 
 ### Locally (Development Mode)
