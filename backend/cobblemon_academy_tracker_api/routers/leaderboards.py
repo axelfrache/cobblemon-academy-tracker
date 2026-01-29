@@ -1,8 +1,7 @@
 from typing import List
-from fastapi import APIRouter, Query
+from fastapi import APIRouter
 from cobblemon_academy_tracker_api.database import get_collection
 from cobblemon_academy_tracker_api.schemas import LeaderboardEntry
-import pymongo
 
 router = APIRouter(prefix="/leaderboards", tags=["leaderboards"])
 
@@ -11,7 +10,6 @@ async def get_leaderboard(category: str, limit: int = 10):
     collection = get_collection("PlayerDataCollection")
     
     sort_field = ""
-    projection_val = ""
     
     if category == "shiny":
         sort_field = "advancementData.totalShinyCaptureCount"

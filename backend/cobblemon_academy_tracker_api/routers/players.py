@@ -1,6 +1,5 @@
-import math
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException
 from cobblemon_academy_tracker_api.database import get_collection
 from cobblemon_academy_tracker_api.schemas import PlayerSummary, Pokemon, PokedexStats
 

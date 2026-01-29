@@ -100,7 +100,7 @@ def mock_mongo():
                 dataset = dataset[:limit]
                 
             # 3. Project (simplified: just return minimal as per leaderboard schemas)
-            project_stage = next((s for s in pipeline if "$project" in s), None)
+            # project_stage = next((s for s in pipeline if "$project" in s), None)
             projected_data = []
             for doc in dataset:
                 val = 0
