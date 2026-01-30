@@ -45,9 +45,9 @@ export default function Leaderboards() {
             </div>
 
             <Tabs defaultValue="pokedex" onValueChange={(v) => setCategory(v as CategoryKey)} className="space-y-8">
-                <TabsList className="grid w-full grid-cols-2 lg:grid-cols-6">
+                <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6">
                     {Object.entries(categories).map(([key, { label, icon: Icon }]) => (
-                        <TabsTrigger key={key} value={key} className="gap-2">
+                        <TabsTrigger key={key} value={key} className="gap-1 sm:gap-2 px-2 sm:px-4 text-xs sm:text-sm">
                             <Icon className="h-4 w-4" />
                             <span className="hidden sm:inline">{label}</span>
                         </TabsTrigger>
