@@ -69,7 +69,7 @@ export function Topbar() {
                         <Input
                             type="search"
                             placeholder="Search player (UUID or name)..."
-                            className="w-full appearance-none bg-background pl-8 shadow-none border-muted focus-visible:ring-primary"
+                            className="w-full appearance-none bg-background pl-8 pr-16 shadow-none border-muted focus-visible:ring-primary"
                             value={query}
                             onChange={(e) => {
                                 setQuery(e.target.value);
@@ -78,6 +78,9 @@ export function Topbar() {
                             onFocus={() => setShowSuggestions(true)}
                             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                         />
+                        <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+                            <span className="text-xs">⌘</span>K
+                        </kbd>
                         {showSuggestions && query && (
                             <div className="absolute top-full left-0 right-0 mt-2 rounded-md border bg-popover text-popover-foreground shadow-md z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                                 {suggestions.length > 0 ? (

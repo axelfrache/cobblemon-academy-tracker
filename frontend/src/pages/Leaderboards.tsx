@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Crown, Sparkles, Swords, Trophy, Egg, Dna, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 const categories = {
     pokedex: { label: "Pokédex Masters", icon: BookOpen, color: "text-pink-500", bg: "bg-pink-500" },
@@ -20,9 +20,25 @@ const categories = {
 type CategoryKey = keyof typeof categories;
 
 export default function Leaderboards() {
-    const [category, setCategory] = useState<CategoryKey>("pokedex");
+    const [searchParams, setSearchParams] = useSearchParams();
+    const tabParam = searchParams.get("tab") as CategoryKey | null;
+    const initialCategory = tabParam && tabParam in categories ? tabParam : "pokedex";
+
+    const [category, setCategory] = useState<CategoryKey>(initialCategory);
     const [data, setData] = useState<LeaderboardEntry[]>([]);
     const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (tabParam && tabParam in categories && tabParam !== category) {
+            setCategory(tabParam);
+        }
+    }, [tabParam, category]);
+
+    const handleCategoryChange = (value: string) => {
+        const newCategory = value as CategoryKey;
+        setCategory(newCategory);
+        setSearchParams({ tab: newCategory });
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -44,7 +60,7 @@ export default function Leaderboards() {
                 <p className="text-muted-foreground">The most elite trainers in the academy.</p>
             </div>
 
-            <Tabs defaultValue="pokedex" onValueChange={(v) => setCategory(v as CategoryKey)} className="space-y-8">
+            <Tabs value={category} onValueChange={handleCategoryChange} className="space-y-8">
                 <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6">
                     {Object.entries(categories).map(([key, { label, icon: Icon }]) => (
                         <TabsTrigger key={key} value={key} className="gap-1 sm:gap-2 px-2 sm:px-4 text-xs sm:text-sm">
