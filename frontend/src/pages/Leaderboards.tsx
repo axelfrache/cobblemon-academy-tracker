@@ -40,13 +40,26 @@ export default function Leaderboards() {
     };
 
     useEffect(() => {
+        let ignore = false;
         const fetchData = async () => {
             setLoading(true);
-            const res = await api.getLeaderboard(category);
-            setData(res);
-            setLoading(false);
+            setData([]);
+            try {
+                const res = await api.getLeaderboard(category);
+                if (!ignore) {
+                    setData(res.filter(entry => entry.value > 0));
+                    setLoading(false);
+                }
+            } catch {
+                if (!ignore) {
+                    setLoading(false);
+                }
+            }
         };
         fetchData();
+        return () => {
+            ignore = true;
+        };
     }, [category]);
 
     const top3 = data.slice(0, 3);
