@@ -23,7 +23,7 @@ type CategoryKey = keyof typeof categories;
 export default function Leaderboards() {
     const [searchParams, setSearchParams] = useSearchParams();
     const tabParam = searchParams.get("tab") as CategoryKey | null;
-    const initialCategory = tabParam && tabParam in categories ? tabParam : "pokedex";
+    const initialCategory = tabParam && tabParam in categories ? tabParam : "academy";
 
     const [category, setCategory] = useState<CategoryKey>(initialCategory);
     const [data, setData] = useState<LeaderboardEntry[]>([]);
@@ -55,7 +55,7 @@ export default function Leaderboards() {
                         setLoading(false);
                     }
                 } else {
-                    const res = await api.getLeaderboard(category as any);
+                    const res = await api.getLeaderboard(category as Exclude<CategoryKey, "academy">);
                     if (!ignore) {
                         setData(res.filter(entry => entry.value > 0));
                         setLoading(false);
