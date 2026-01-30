@@ -107,6 +107,25 @@ class LeaderboardEntry(BaseModel):
     rank: int
 
 
+class AcademyRankEntry(BaseModel):
+    uuid: str
+    username: Optional[str] = None
+    academyRank: int
+    academyScore: float
+    ranks: Dict[str, int]
+    normalized: Dict[str, float]
+    totalPlayers: int
+
+
+class AcademyRankResponse(BaseModel):
+    category: str = "academy"
+    totalPlayers: int
+    limit: int
+    offset: int
+    weights: Dict[str, float]
+    entries: List[AcademyRankEntry]
+
+
 # --- Pokedex ---
 
 

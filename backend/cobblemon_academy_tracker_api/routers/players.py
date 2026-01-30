@@ -1,7 +1,12 @@
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException
 from cobblemon_academy_tracker_api.database import get_collection
-from cobblemon_academy_tracker_api.schemas import PlayerSummary, Pokemon, PokedexStats
+from cobblemon_academy_tracker_api.schemas import (
+    PlayerSummary,
+    Pokemon,
+    PokedexStats,
+    AcademyRankEntry,
+)
 
 router = APIRouter(prefix="/players", tags=["players"])
 
@@ -133,3 +138,17 @@ async def get_player_pokedex(uuid: str):
         total_caught=total_caught,
         completion_percentage=completion_percentage,
     )
+
+
+@router.get("/{uuid}/rank", response_model=AcademyRankEntry)
+async def get_player_rank(uuid: str):
+    from cobblemon_academy_tracker_api.routers.leaderboards import (
+        get_cached_academy_ranks,
+    )
+
+    ranks = await get_cached_academy_ranks()
+    for entry in ranks:
+        if entry.uuid == uuid:
+            return entry
+
+    raise HTTPException(status_code=404, detail="Player rank data not found")
