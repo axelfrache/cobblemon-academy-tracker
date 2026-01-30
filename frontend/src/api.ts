@@ -145,8 +145,55 @@ export const api = {
             console.error(error);
             return [];
         }
+    },
+
+    getServerStats: async () => {
+        try {
+            const [captures, shiny, battles] = await Promise.all([
+                api.getLeaderboard("captures"),
+                api.getLeaderboard("shiny"),
+                api.getLeaderboard("battles")
+            ]);
+
+            const totalCaptures = captures.reduce((acc, curr) => acc + curr.value, 0);
+            const totalShinies = shiny.reduce((acc, curr) => acc + curr.value, 0);
+            const totalBattles = battles.reduce((acc, curr) => acc + curr.value, 0);
+            const activeTrainers = new Set([
+                ...captures.map(e => e.uuid),
+                ...shiny.map(e => e.uuid),
+                ...battles.map(e => e.uuid)
+            ]).size;
+
+            return {
+                totalCaptures,
+                totalShinies,
+                totalBattles,
+                activeTrainers,
+                topShinies: shiny.slice(0, 5),
+                recentTrainers: captures.slice(0, 10),
+            };
+        } catch (error) {
+            console.error(error);
+            return {
+                totalCaptures: 0,
+                totalShinies: 0,
+                totalBattles: 0,
+                activeTrainers: 0,
+                topShinies: [],
+                recentTrainers: [],
+            };
+        }
     }
 };
+
+export interface ServerStats {
+    totalCaptures: number;
+    totalShinies: number;
+    totalBattles: number;
+    activeTrainers: number;
+    topShinies: LeaderboardEntry[];
+    recentTrainers: LeaderboardEntry[];
+}
 
 function stripPrefix(str: string): string {
     return str.replace("cobblemon:", "");

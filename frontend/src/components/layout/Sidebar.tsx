@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { LayoutDashboard, Trophy, Users, Menu } from "lucide-react";
+import { BarChart3, Trophy, Users, Menu } from "lucide-react";
 import { useState } from "react";
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -12,9 +12,9 @@ interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const navItems = [
     {
-        title: "Dashboard",
+        title: "Server Overview",
         href: "/",
-        icon: LayoutDashboard,
+        icon: BarChart3,
     },
     {
         title: "Leaderboards",
