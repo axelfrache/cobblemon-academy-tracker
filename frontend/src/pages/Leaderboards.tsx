@@ -90,11 +90,18 @@ export default function Leaderboards() {
             </div>
 
             <Tabs value={category} onValueChange={handleCategoryChange} className="space-y-8">
-                <TabsList className="grid w-full h-auto grid-cols-2 sm:grid-cols-3 md:grid-cols-5 bg-muted/50 p-1">
-                    {Object.entries(categories).map(([key, { label, icon: Icon }]) => (
-                        <TabsTrigger key={key} value={key} className="gap-1 sm:gap-2 px-2 sm:px-4 text-xs sm:text-sm">
-                            <Icon className="h-4 w-4" />
-                            <span className="hidden sm:inline">{label}</span>
+                <TabsList className="bg-transparent h-auto p-0 flex flex-wrap gap-2 justify-center mb-8">
+                    {Object.entries(categories).map(([key, { label, icon: Icon, color }]) => (
+                        <TabsTrigger
+                            key={key}
+                            value={key}
+                            className={cn(
+                                "flex items-center gap-2 px-4 py-2 rounded-full border bg-muted/40 data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-300",
+                                category === key && `border-${color.split("-")[1]}-200 dark:border-${color.split("-")[1]}-800`
+                            )}
+                        >
+                            <Icon className={cn("h-4 w-4", category === key ? color : "text-muted-foreground")} />
+                            <span className={cn(category === key ? "font-medium" : "text-muted-foreground")}>{label}</span>
                         </TabsTrigger>
                     ))}
                 </TabsList>

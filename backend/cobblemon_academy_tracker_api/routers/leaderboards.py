@@ -34,6 +34,21 @@ async def get_shiny_leaderboard(limit: int = 10) -> List[LeaderboardEntry]:
     return results
 
 
+@router.get("/academy", response_model=List[AcademyRankEntry])
+async def get_academy_endpoint(limit: int = 100):
+    try:
+        print("Calculating Academy Ranks...")
+        results = await get_academy_leaderboard(limit)
+        print(f"Calculation done. Got {len(results)} results.")
+        return results
+    except Exception as e:
+        import traceback
+
+        traceback.print_exc()
+        print(f"ERROR computing academy ranks: {e}")
+        raise e
+
+
 @router.get("/{category}", response_model=List[LeaderboardEntry])
 async def get_leaderboard(category: str, limit: int = 10):
     if category == "pokedex":
@@ -41,9 +56,6 @@ async def get_leaderboard(category: str, limit: int = 10):
 
     if category == "shiny":
         return await get_shiny_leaderboard(limit)
-
-    if category == "academy":
-        return await get_academy_leaderboard(limit)
 
     collection = get_collection("PlayerDataCollection")
 
@@ -101,21 +113,16 @@ async def get_leaderboard(category: str, limit: int = 10):
     return results
 
 
-# --- Academy (Global) Rank Implementation ---
-
 ACADEMY_CACHE: Dict = {"data": None, "expires_at": datetime.min}
-CACHE_TTL_SECONDS = 300  # 5 minutes
+CACHE_TTL_SECONDS = 300
 
 
 async def get_cached_academy_ranks() -> List[AcademyRankEntry]:
-    # Check cache
     if ACADEMY_CACHE["data"] and datetime.now() < ACADEMY_CACHE["expires_at"]:
         return ACADEMY_CACHE["data"]
 
-    # Compute
     results = await calculate_academy_ranks()
 
-    # Update cache
     ACADEMY_CACHE["data"] = results
     ACADEMY_CACHE["expires_at"] = datetime.now() + timedelta(seconds=CACHE_TTL_SECONDS)
 
@@ -128,13 +135,11 @@ async def get_academy_leaderboard(limit: int = 100) -> List[AcademyRankEntry]:
 
 
 async def calculate_academy_ranks() -> List[AcademyRankEntry]:
-    # Weights
     W_POKEDEX = 0.35
     W_SHINY = 0.30
     W_BATTLES = 0.25
     W_EGGS = 0.10
 
-    # 1. Gather all raw data
     pokedex_scores = await _get_all_pokedex_scores()
     shiny_scores = await _get_all_shiny_scores()
     battle_scores = await _get_all_basic_scores(
@@ -142,7 +147,6 @@ async def calculate_academy_ranks() -> List[AcademyRankEntry]:
     )
     egg_scores = await _get_all_basic_scores("advancementData.totalEggsHatched")
 
-    # master set of uuids
     all_uuids = (
         set(pokedex_scores.keys())
         | set(shiny_scores.keys())
@@ -154,8 +158,6 @@ async def calculate_academy_ranks() -> List[AcademyRankEntry]:
     if total_players == 0:
         return []
 
-    # 2. Compute Ranks for each category
-    # Function to get ranks map: uuid -> rank (1-based)
     def compute_ranks(scores: Dict[str, float]) -> Dict[str, int]:
         sorted_uuid = sorted(all_uuids, key=lambda u: scores.get(u, 0), reverse=True)
         ranks = {}
@@ -171,23 +173,21 @@ async def calculate_academy_ranks() -> List[AcademyRankEntry]:
     rank_battles = compute_ranks(battle_scores)
     rank_eggs = compute_ranks(egg_scores)
 
-    # 3. Normalize & Weighted Sum
-    # Score = 1 - (rank - 1) / (N - 1)
-    # If N=1, Score = 1
-
     academy_entries = []
 
     for uuid in all_uuids:
 
-        def get_norm(rank: int) -> float:
+        def get_norm(rank: int, raw_val: float) -> float:
+            if raw_val == 0:
+                return 0.0
             if total_players <= 1:
                 return 1.0
             return 1.0 - (rank - 1) / (total_players - 1)
 
-        norm_pokedex = get_norm(rank_pokedex[uuid])
-        norm_shiny = get_norm(rank_shiny[uuid])
-        norm_battles = get_norm(rank_battles[uuid])
-        norm_eggs = get_norm(rank_eggs[uuid])
+        norm_pokedex = get_norm(rank_pokedex[uuid], pokedex_scores.get(uuid, 0))
+        norm_shiny = get_norm(rank_shiny[uuid], shiny_scores.get(uuid, 0))
+        norm_battles = get_norm(rank_battles[uuid], battle_scores.get(uuid, 0))
+        norm_eggs = get_norm(rank_eggs[uuid], egg_scores.get(uuid, 0))
 
         raw_score = (
             W_POKEDEX * norm_pokedex
