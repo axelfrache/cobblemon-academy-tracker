@@ -5,12 +5,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Search, History, Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { api, type LeaderboardEntry } from "../api";
+import { api } from "../api";
+import { getPrimaryTitle, type PlayerTitleData, RARITY_CONFIG, TONE_COLORS } from "@/lib/titles";
+import { cn } from "@/lib/utils";
+
+interface SuggestedPlayer {
+    uuid: string;
+    name: string;
+    title: ReturnType<typeof getPrimaryTitle>;
+}
 
 export default function Players() {
     const [query, setQuery] = useState("");
     const [recentSearches, setRecentSearches] = useState<{ name: string, uuid: string }[]>([]);
-    const [suggestedPlayers, setSuggestedPlayers] = useState<LeaderboardEntry[]>([]);
+    const [suggestedPlayers, setSuggestedPlayers] = useState<SuggestedPlayer[]>([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -20,13 +28,43 @@ export default function Players() {
         }
 
         const fetchSuggested = async () => {
-            const [shiny, captures] = await Promise.all([
+            const [shiny, captures, battles] = await Promise.all([
                 api.getLeaderboard("shiny"),
-                api.getLeaderboard("captures")
+                api.getLeaderboard("captures"),
+                api.getLeaderboard("battles"),
             ]);
-            const combined = [...shiny, ...captures];
-            const unique = Array.from(new Map(combined.map(item => [item.uuid, item])).values());
-            setSuggestedPlayers(unique.slice(0, 12));
+
+            const playerStats = new Map<string, PlayerTitleData & { name: string }>();
+
+            const mergeStats = (list: typeof shiny, key: keyof PlayerTitleData) => {
+                list.forEach(entry => {
+                    const current = playerStats.get(entry.uuid) || {
+                        totalCaptures: 0,
+                        shinyCount: 0,
+                        battlesWon: 0,
+                        pokedexCompletion: 0,
+                        name: entry.name
+                    };
+                    current[key] = entry.value;
+                    playerStats.set(entry.uuid, current);
+                });
+            };
+
+            mergeStats(shiny, "shinyCount");
+            mergeStats(captures, "totalCaptures");
+            mergeStats(battles, "battlesWon");
+
+            const suggestions: SuggestedPlayer[] = Array.from(playerStats.entries())
+                .map(([uuid, stats]) => ({
+                    uuid,
+                    name: stats.name,
+                    title: getPrimaryTitle(stats)
+                }))
+                .sort((a, b) => (b.title.priority + (b.title.rarity === 'Legendary' ? 1000 : b.title.rarity === 'Epic' ? 500 : 0)) -
+                    (a.title.priority + (a.title.rarity === 'Legendary' ? 1000 : a.title.rarity === 'Epic' ? 500 : 0)))
+                .slice(0, 12);
+
+            setSuggestedPlayers(suggestions);
         };
         fetchSuggested();
     }, []);
@@ -91,21 +129,31 @@ export default function Players() {
             <div className="space-y-4">
                 <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
                     <Trophy className="h-5 w-5 text-primary" />
-                    {query ? "Search Results (from Top Players)" : "Top Trainers"}
+                    {query ? "Search Results" : "Top Trainers"}
                 </h2>
 
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {filteredSuggestions.map((player) => (
                         <Link key={player.uuid} to={`/players/${player.uuid}`}>
-                            <Card className="hover:border-primary transition-all group">
+                            <Card className={cn(
+                                "transition-all group border hover:shadow-md",
+                                RARITY_CONFIG[player.title.rarity].border,
+                                RARITY_CONFIG[player.title.rarity].bg
+                            )}>
                                 <CardHeader className="flex flex-row items-center gap-4">
-                                    <Avatar className="h-12 w-12 group-hover:ring-2 ring-primary transition-all">
+                                    <Avatar className={cn(
+                                        "h-12 w-12 transition-all border-2",
+                                        player.title.rarity === "Legendary" ? "border-amber-500 shadow-amber-500/20 shadow-lg" : "border-transparent"
+                                    )}>
                                         <AvatarImage src={`https://minotar.net/avatar/${player.name}`} />
                                         <AvatarFallback>{player.name?.[0] ?? "?"}</AvatarFallback>
                                     </Avatar>
-                                    <div>
-                                        <div className="font-bold group-hover:text-primary transition-colors">{player.name}</div>
-                                        <div className="text-xs text-muted-foreground font-mono">Ranked Player</div>
+                                    <div className="overflow-hidden">
+                                        <div className="font-bold truncate group-hover:text-primary transition-colors">{player.name}</div>
+                                        <div className={cn("text-xs flex items-center gap-1 font-medium", TONE_COLORS[player.title.tone])}>
+                                            <player.title.icon className="h-3 w-3" />
+                                            {player.title.name}
+                                        </div>
                                     </div>
                                 </CardHeader>
                             </Card>
