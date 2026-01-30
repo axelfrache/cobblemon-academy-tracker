@@ -143,9 +143,9 @@ export default function PlayerProfile() {
                 </div>
 
                 <TabsContent value="summary" className="space-y-4">
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                    <div className="grid gap-4 lg:grid-cols-7">
                         {/* Signature Pokemon Card */}
-                        <Card className="col-span-3 bg-gradient-to-br from-card to-muted/20 border-primary/20">
+                        <Card className="lg:col-span-3 bg-gradient-to-br from-card to-muted/20 border-primary/20">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <Star className="h-5 w-5 text-primary fill-primary" />
@@ -182,7 +182,7 @@ export default function PlayerProfile() {
                         </Card>
 
                         {/* Analysis Grid */}
-                        <div className="col-span-4 grid gap-4 grid-cols-2">
+                        <div className="lg:col-span-4 grid gap-4 grid-cols-2">
                             <Card>
                                 <CardHeader className="pb-2">
                                     <CardTitle className="text-sm font-medium text-muted-foreground">Shiny Luck</CardTitle>
