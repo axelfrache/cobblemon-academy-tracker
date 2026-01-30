@@ -19,6 +19,7 @@ import {
     Egg,
     User,
     Loader2,
+    GraduationCap,
 } from "lucide-react";
 import { api, type LeaderboardEntry } from "@/api";
 
@@ -91,6 +92,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     ];
 
     const leaderboards = [
+        { name: "Academy Rank", path: "/leaderboards?tab=academy", icon: GraduationCap, color: "text-indigo-500" },
         { name: "Pokédex Masters", path: "/leaderboards?tab=pokedex", icon: BookOpen, color: "text-pink-500" },
         { name: "Battle Wins", path: "/leaderboards?tab=battles", icon: Swords, color: "text-red-500" },
         { name: "Shiny Hunters", path: "/leaderboards?tab=shiny", icon: Sparkles, color: "text-amber-500" },
