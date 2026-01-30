@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Copy, Sparkles, Trophy, Swords, Egg, Search, Star, type LucideIcon } from "lucide-react";
+import { Copy, Sparkles, Swords, Egg, Search, Star, BookOpen, type LucideIcon } from "lucide-react";
 import { cn, getAvatarUrl } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import {
@@ -151,7 +151,7 @@ export default function PlayerProfile() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                    <QuickStat icon={Trophy} label="Captures" value={summary.totalCaptures} />
+                    <QuickStat icon={BookOpen} label="Pokédex" value={summary.pokedexCount} />
                     <QuickStat icon={Sparkles} label="Shinies" value={summary.shinyCount} className="text-amber-500" />
                     <QuickStat icon={Swords} label="Wins" value={summary.battlesWon} className="text-red-500" />
                     <QuickStat icon={Egg} label="Rank" value={summary.rank > 0 ? `#${summary.rank}` : "-"} />

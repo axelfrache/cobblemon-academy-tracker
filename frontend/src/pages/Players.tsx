@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, History, Trophy } from "lucide-react";
+import { Search, History, Trophy, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api";
@@ -81,7 +81,10 @@ export default function Players() {
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold tracking-tight text-primary">Player Directory</h1>
+                <h1 className="text-3xl font-bold tracking-tight text-primary flex items-center gap-2">
+                    <Users className="h-8 w-8" />
+                    Player Directory
+                </h1>
                 <p className="text-muted-foreground">Find and inspect trainer profiles.</p>
             </div>
 

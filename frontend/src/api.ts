@@ -209,7 +209,7 @@ function transformBackendPokemon(p: BackendPokemon): Pokemon {
     const exactSpecies = stripPrefix(p.Species).toLowerCase();
     const showdownName = exactSpecies.replace(/[_ ]/g, "");
 
-    const spriteUrl = `https://play.pokemonshowdown.com/sprites/${p.Shiny ? "xyani-shiny" : "xyani"}/${showdownName}.gif`;
+    const spriteUrl = `https://play.pokemonshowdown.com/sprites/${p.Shiny ? "ani-shiny" : "ani"}/${showdownName}.gif`;
 
     return {
         species: displaySpecies,

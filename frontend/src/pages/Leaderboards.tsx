@@ -55,7 +55,10 @@ export default function Leaderboards() {
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold tracking-tight text-primary">Leaderboards</h1>
+                <h1 className="text-3xl font-bold tracking-tight text-primary flex items-center gap-2">
+                    <Trophy className="h-8 w-8" />
+                    Leaderboards
+                </h1>
                 <p className="text-muted-foreground">The most elite trainers in the academy.</p>
             </div>
 
