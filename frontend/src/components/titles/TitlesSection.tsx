@@ -24,7 +24,7 @@ export function TitlesSection({ playerData }: TitlesSectionProps) {
         return rarityOrder[b.rarity] - rarityOrder[a.rarity] || b.priority - a.priority;
     });
 
-    const earnedCount = earnedTitles.filter((t) => t.id !== "rookie-trainer").length;
+    const earnedCount = earnedTitles.length;
 
     return (
         <div className="space-y-4">
@@ -34,7 +34,7 @@ export function TitlesSection({ playerData }: TitlesSectionProps) {
                     <h3 className="text-lg font-semibold">Trainer Titles</h3>
                 </div>
                 <span className="text-sm text-muted-foreground">
-                    {earnedCount} / {TITLE_DEFINITIONS.length - 1} earned
+                    {earnedCount} / {TITLE_DEFINITIONS.length} earned
                 </span>
             </div>
 

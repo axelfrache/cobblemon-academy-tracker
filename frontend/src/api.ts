@@ -8,6 +8,7 @@ export interface PlayerSummary {
     shinyCount: number;
     battlesWon: number;
     pokedexCompletion: number;
+    pokedexCount: number;
 }
 
 export interface Pokemon {
@@ -61,7 +62,7 @@ interface BackendPokemon {
 }
 
 export const api = {
-    getLeaderboard: async (category: "shiny" | "captures" | "battles" | "breeders" | "aspects" | "pokedex"): Promise<LeaderboardEntry[]> => {
+    getLeaderboard: async (category: "shiny" | "captures" | "battles" | "breeders" | "pokedex"): Promise<LeaderboardEntry[]> => {
         try {
             const res = await fetch(`${BASE_URL}/leaderboards/${category}`);
             if (!res.ok) throw new Error("Failed to fetch leaderboard");
@@ -80,7 +81,7 @@ export const api = {
         }
     },
 
-    getPlayerSummary: async (uuid: string): Promise<PlayerSummary | null> => {
+    getPlayer: async (uuid: string): Promise<PlayerSummary | null> => {
         try {
             const [summaryRes, leaderboard, pokedexRes] = await Promise.all([
                 fetch(`${BASE_URL}/players/${uuid}/summary`),
@@ -95,9 +96,11 @@ export const api = {
             const rank = rankEntry ? rankEntry.rank : 0;
 
             let pokedexCompletion = 0;
+            let pokedexCount = 0;
             if (pokedexRes.ok) {
                 const pokedexData = await pokedexRes.json();
                 pokedexCompletion = pokedexData.completion_percentage ?? 0;
+                pokedexCount = pokedexData.total_caught ?? 0;
             }
 
             return {
@@ -108,6 +111,7 @@ export const api = {
                 shinyCount: data.advancementData?.totalShinyCaptureCount ?? 0,
                 battlesWon: data.advancementData?.totalBattleVictoryCount ?? 0,
                 pokedexCompletion: pokedexCompletion,
+                pokedexCount: pokedexCount,
             };
         } catch (error) {
             console.error(error);

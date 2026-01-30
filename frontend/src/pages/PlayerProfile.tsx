@@ -49,7 +49,7 @@ export default function PlayerProfile() {
             if (!uuid) return;
             setLoading(true);
             const [sum, par] = await Promise.all([
-                api.getPlayerSummary(uuid),
+                api.getPlayer(uuid),
                 api.getPlayerParty(uuid)
             ]);
 
@@ -61,7 +61,8 @@ export default function PlayerProfile() {
                     totalCaptures: 850,
                     shinyCount: 12,
                     battlesWon: 156,
-                    pokedexCompletion: 0
+                    pokedexCompletion: 0,
+                    pokedexCount: 0
                 });
                 setParty([]);
             } else {
@@ -248,7 +249,7 @@ export default function PlayerProfile() {
                                                 {summary?.pokedexCompletion?.toFixed(1) ?? 0}%
                                             </div>
                                             <Badge variant="secondary" className="text-xs">
-                                                {Math.round((summary?.pokedexCompletion ?? 0) / 100 * 722)} / 722 species
+                                                {summary?.pokedexCount ?? 0} / 722 species
                                             </Badge>
                                         </div>
                                         <div className="h-3 w-full bg-muted rounded-full overflow-hidden">
@@ -378,8 +379,8 @@ export default function PlayerProfile() {
                     </div>
                 </TabsContent>
 
-            </Tabs>
-        </div>
+            </Tabs >
+        </div >
     );
 }
 

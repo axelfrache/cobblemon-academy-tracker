@@ -17,7 +17,6 @@ import {
     Swords,
     BookOpen,
     Egg,
-    Dna,
     User,
     Loader2,
 } from "lucide-react";
@@ -97,7 +96,6 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         { name: "Shiny Hunters", path: "/leaderboards?tab=shiny", icon: Sparkles, color: "text-amber-500" },
         { name: "Total Captures", path: "/leaderboards?tab=captures", icon: Trophy, color: "text-cyan-500" },
         { name: "Eggs Hatched", path: "/leaderboards?tab=breeders", icon: Egg, color: "text-green-500" },
-        { name: "Unique Aspects", path: "/leaderboards?tab=aspects", icon: Dna, color: "text-violet-500" },
     ];
 
     return (

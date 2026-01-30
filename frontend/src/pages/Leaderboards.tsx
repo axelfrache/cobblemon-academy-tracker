@@ -3,7 +3,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { api, type LeaderboardEntry } from "../api";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Crown, Sparkles, Swords, Trophy, Egg, Dna, BookOpen } from "lucide-react";
+import { Crown, Sparkles, Swords, Trophy, Egg, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useSearchParams } from "react-router-dom";
@@ -14,7 +14,6 @@ const categories = {
     shiny: { label: "Shiny Dex", icon: Sparkles, color: "text-amber-500", bg: "bg-amber-500" },
     captures: { label: "Total Captures", icon: Trophy, color: "text-cyan-500", bg: "bg-cyan-500" },
     breeders: { label: "Eggs Hatched", icon: Egg, color: "text-green-500", bg: "bg-green-500" },
-    aspects: { label: "Unique Aspects", icon: Dna, color: "text-violet-500", bg: "bg-violet-500" },
 };
 
 type CategoryKey = keyof typeof categories;
@@ -61,7 +60,7 @@ export default function Leaderboards() {
             </div>
 
             <Tabs value={category} onValueChange={handleCategoryChange} className="space-y-8">
-                <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6">
+                <TabsList className="grid w-full h-auto grid-cols-2 sm:grid-cols-3 md:grid-cols-5 bg-muted/50 p-1">
                     {Object.entries(categories).map(([key, { label, icon: Icon }]) => (
                         <TabsTrigger key={key} value={key} className="gap-1 sm:gap-2 px-2 sm:px-4 text-xs sm:text-sm">
                             <Icon className="h-4 w-4" />
