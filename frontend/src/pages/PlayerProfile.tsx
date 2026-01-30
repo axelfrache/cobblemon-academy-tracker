@@ -150,7 +150,7 @@ export default function PlayerProfile() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <QuickStat icon={BookOpen} label="Pokédex" value={summary.pokedexCount} />
                     <QuickStat icon={Sparkles} label="Shinies" value={summary.shinyCount} className="text-amber-500" />
                     <QuickStat icon={Swords} label="Wins" value={summary.battlesWon} className="text-red-500" />
