@@ -1,13 +1,14 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { api, type PlayerSummary, type PlayerPartyMember, type Pokemon } from "../api";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Copy, Sparkles, Swords, Egg, Search, Star, BookOpen, type LucideIcon } from "lucide-react";
+import { Copy, Sparkles, Swords, Search, Star, BookOpen, GraduationCap, type LucideIcon } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { api, type PlayerSummary, type PlayerPartyMember, type Pokemon, type AcademyRankEntry } from "../api";
 import { cn, getAvatarUrl } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import {
@@ -43,6 +44,17 @@ export default function PlayerProfile() {
         const timer = setTimeout(() => setDebouncedSearch(searchQuery), 500);
         return () => clearTimeout(timer);
     }, [searchQuery]);
+
+    const [rankData, setRankData] = useState<AcademyRankEntry | null>(null);
+
+    useEffect(() => {
+        const fetchRank = async () => {
+            if (!uuid) return;
+            const data = await api.getPlayerRank(uuid);
+            setRankData(data);
+        };
+        fetchRank();
+    }, [uuid]);
 
     useEffect(() => {
         const fetchBaseData = async () => {
@@ -83,7 +95,6 @@ export default function PlayerProfile() {
         fetchPC();
     }, [uuid, pcPage, debouncedSearch, isShinyFilter]);
 
-    // Compute player title data - must be before any conditional returns
     const playerTitleData: PlayerTitleData = useMemo(() => ({
         totalCaptures: summary?.totalCaptures ?? 0,
         shinyCount: summary?.shinyCount ?? 0,
@@ -135,10 +146,44 @@ export default function PlayerProfile() {
                             {secondaryTitles.map((title) => (
                                 <TitleBadge key={title.id} title={title} size="sm" />
                             ))}
-                            {summary.rank > 0 && summary.rank <= 3 && (
-                                <Badge variant="default" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                                    Top {summary.rank}
-                                </Badge>
+                            {rankData && (
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Badge variant="outline" className="bg-indigo-500/10 text-indigo-600 border-indigo-200 hover:bg-indigo-500/20 cursor-pointer flex gap-1 items-center">
+                                            <GraduationCap className="h-3 w-3" />
+                                            Server Rank #{rankData.academyRank}
+                                        </Badge>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-80">
+                                        <div className="space-y-4">
+                                            <div className="flex justify-between items-center">
+                                                <h4 className="font-semibold leading-none">Academy Score</h4>
+                                                <span className="text-xl font-bold text-indigo-600">{rankData.academyScore.toFixed(2)}</span>
+                                            </div>
+                                            <div className="text-sm text-muted-foreground">
+                                                Based on weighted performance across statistics:
+                                            </div>
+                                            <div className="grid gap-2">
+                                                <div className="flex justify-between text-sm">
+                                                    <span>Pokédex (35%)</span>
+                                                    <span className="font-medium">#{rankData.ranks.pokedex}</span>
+                                                </div>
+                                                <div className="flex justify-between text-sm">
+                                                    <span>Shiny Dex (30%)</span>
+                                                    <span className="font-medium">#{rankData.ranks.shiny}</span>
+                                                </div>
+                                                <div className="flex justify-between text-sm">
+                                                    <span>Battles (25%)</span>
+                                                    <span className="font-medium">#{rankData.ranks.battles}</span>
+                                                </div>
+                                                <div className="flex justify-between text-sm">
+                                                    <span>Eggs (10%)</span>
+                                                    <span className="font-medium">#{rankData.ranks.eggs}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </PopoverContent>
+                                </Popover>
                             )}
                         </div>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground font-mono bg-muted/50 px-2 py-1 rounded w-fit">
@@ -154,7 +199,7 @@ export default function PlayerProfile() {
                     <QuickStat icon={BookOpen} label="Pokédex" value={summary.pokedexCount} />
                     <QuickStat icon={Sparkles} label="Shinies" value={summary.shinyCount} className="text-amber-500" />
                     <QuickStat icon={Swords} label="Wins" value={summary.battlesWon} className="text-red-500" />
-                    <QuickStat icon={Egg} label="Rank" value={summary.rank > 0 ? `#${summary.rank}` : "-"} />
+                    <QuickStat icon={GraduationCap} label="Rank" value={rankData ? `#${rankData.academyRank}` : (summary.rank > 0 ? `#${summary.rank}` : "-")} />
                 </div>
             </div>
 

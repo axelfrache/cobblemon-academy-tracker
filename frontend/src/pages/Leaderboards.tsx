@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { api, type LeaderboardEntry } from "../api";
+import { Badge } from "@/components/ui/badge";
+import { api, type LeaderboardEntry, type AcademyRankEntry } from "../api";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Crown, Sparkles, Swords, Trophy, Egg, BookOpen } from "lucide-react";
+import { Crown, Sparkles, Swords, Trophy, Egg, BookOpen, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useSearchParams } from "react-router-dom";
 
 const categories = {
+    academy: { label: "Academy Rank", icon: GraduationCap, color: "text-indigo-500", bg: "bg-indigo-500" },
     pokedex: { label: "Pokédex Masters", icon: BookOpen, color: "text-pink-500", bg: "bg-pink-500" },
     battles: { label: "Battle Wins", icon: Swords, color: "text-red-500", bg: "bg-red-500" },
     shiny: { label: "Shiny Dex", icon: Sparkles, color: "text-amber-500", bg: "bg-amber-500" },
@@ -25,6 +27,7 @@ export default function Leaderboards() {
 
     const [category, setCategory] = useState<CategoryKey>(initialCategory);
     const [data, setData] = useState<LeaderboardEntry[]>([]);
+    const [academyData, setAcademyData] = useState<AcademyRankEntry[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -45,10 +48,18 @@ export default function Leaderboards() {
             setLoading(true);
             setData([]);
             try {
-                const res = await api.getLeaderboard(category);
-                if (!ignore) {
-                    setData(res.filter(entry => entry.value > 0));
-                    setLoading(false);
+                if (category === "academy") {
+                    const res = await api.getAcademyLeaderboard();
+                    if (!ignore) {
+                        setAcademyData(res);
+                        setLoading(false);
+                    }
+                } else {
+                    const res = await api.getLeaderboard(category as any);
+                    if (!ignore) {
+                        setData(res.filter(entry => entry.value > 0));
+                        setLoading(false);
+                    }
                 }
             } catch {
                 if (!ignore) {
@@ -64,6 +75,9 @@ export default function Leaderboards() {
 
     const top3 = data.slice(0, 3);
     const rest = data.slice(3, 10);
+
+    const academyTop3 = academyData.slice(0, 3);
+    const academyRest = academyData.slice(3, 100);
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
@@ -100,79 +114,202 @@ export default function Leaderboards() {
                     </div>
                 ) : (
                     <TabsContent value={category} className="space-y-8 mt-12">
-                        {top3.length > 0 && (
-                            <div className="relative flex items-end justify-center gap-4 sm:gap-8 h-80 pt-10 text-center">
-                                {top3[1] && (
-                                    <div className="flex flex-col items-center gap-2 animate-in slide-in-from-bottom-8 fade-in duration-700 delay-100">
-                                        <PodiumAvatar entry={top3[1]} rank={2} color="text-slate-400" ring="ring-slate-400" />
-                                        <div className="h-32 w-20 sm:w-32 bg-slate-400/10 rounded-t-lg border-t border-slate-400/30 flex items-center justify-center relative">
-                                            <span className="text-4xl font-black text-slate-400/20 absolute -bottom-4">2</span>
-                                        </div>
+                        {category === "academy" ? (
+                            <>
+                                {academyTop3.length > 0 && (
+                                    <div className="relative flex items-end justify-center gap-4 sm:gap-8 h-80 pt-10 text-center">
+                                        {/* Podium Logic for Academy - Adapted */}
+                                        {academyTop3[1] && (
+                                            <div className="flex flex-col items-center gap-2 animate-in slide-in-from-bottom-8 fade-in duration-700 delay-100">
+                                                <PodiumAvatar
+                                                    entry={{
+                                                        uuid: academyTop3[1].uuid,
+                                                        name: academyTop3[1].username,
+                                                        value: academyTop3[1].academyScore,
+                                                        avatar: `https://minotar.net/avatar/${academyTop3[1].username}`,
+                                                        rank: 2
+                                                    }}
+                                                    rank={2} color="text-slate-400" ring="ring-slate-400"
+                                                />
+                                                <div className="h-32 w-20 sm:w-32 bg-slate-400/10 rounded-t-lg border-t border-slate-400/30 flex items-center justify-center relative">
+                                                    <span className="text-4xl font-black text-slate-400/20 absolute -bottom-4">2</span>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {academyTop3[0] && (
+                                            <div className="flex flex-col items-center gap-2 z-10 -mt-8">
+                                                <div className="absolute -top-12">
+                                                    <Crown className="h-8 w-8 text-primary animate-bounce fill-primary/20" />
+                                                </div>
+                                                <PodiumAvatar
+                                                    entry={{
+                                                        uuid: academyTop3[0].uuid,
+                                                        name: academyTop3[0].username,
+                                                        value: academyTop3[0].academyScore,
+                                                        avatar: `https://minotar.net/avatar/${academyTop3[0].username}`,
+                                                        rank: 1
+                                                    }}
+                                                    rank={1} color="text-yellow-500" ring="ring-yellow-500" size="large"
+                                                />
+                                                <div className="h-48 w-24 sm:w-40 bg-yellow-500/10 rounded-t-lg border-t border-yellow-500/30 flex items-center justify-center relative shadow-[0_0_30px_-10px_rgba(234,179,8,0.4)]">
+                                                    <span className="text-6xl font-black text-yellow-500/20 absolute -bottom-4">1</span>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {academyTop3[2] && (
+                                            <div className="flex flex-col items-center gap-2 animate-in slide-in-from-bottom-8 fade-in duration-700 delay-200">
+                                                <PodiumAvatar
+                                                    entry={{
+                                                        uuid: academyTop3[2].uuid,
+                                                        name: academyTop3[2].username,
+                                                        value: academyTop3[2].academyScore,
+                                                        avatar: `https://minotar.net/avatar/${academyTop3[2].username}`,
+                                                        rank: 3
+                                                    }}
+                                                    rank={3} color="text-amber-700" ring="ring-amber-700"
+                                                />
+                                                <div className="h-24 w-20 sm:w-32 bg-amber-700/10 rounded-t-lg border-t border-amber-700/30 flex items-center justify-center relative">
+                                                    <span className="text-4xl font-black text-amber-700/20 absolute -bottom-4">3</span>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
-                                {top3[0] && (
-                                    <div className="flex flex-col items-center gap-2 z-10 -mt-8">
-                                        <div className="absolute -top-12">
-                                            <Crown className="h-8 w-8 text-primary animate-bounce fill-primary/20" />
-                                        </div>
-                                        <PodiumAvatar entry={top3[0]} rank={1} color="text-yellow-500" ring="ring-yellow-500" size="large" />
-                                        <div className="h-48 w-24 sm:w-40 bg-yellow-500/10 rounded-t-lg border-t border-yellow-500/30 flex items-center justify-center relative shadow-[0_0_30px_-10px_rgba(234,179,8,0.4)]">
-                                            <span className="text-6xl font-black text-yellow-500/20 absolute -bottom-4">1</span>
-                                        </div>
+                                {academyRest.length > 0 && (
+                                    <div className="rounded-md border animate-in fade-in duration-700 delay-300">
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead className="w-12 text-center">#</TableHead>
+                                                    <TableHead>Trainer</TableHead>
+                                                    <TableHead className="hidden md:table-cell">Breakdown</TableHead>
+                                                    <TableHead className="text-right">Score</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {academyRest.map((entry) => (
+                                                    <TableRow key={entry.uuid} className="hover:bg-muted/50 transition-colors">
+                                                        <TableCell className="text-center font-medium text-muted-foreground w-12">
+                                                            {entry.academyRank}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Link to={`/players/${entry.uuid}`} className="flex items-center gap-3 hover:underline group">
+                                                                <Avatar className="h-8 w-8">
+                                                                    <AvatarImage src={`https://minotar.net/avatar/${entry.username}`} />
+                                                                    <AvatarFallback>{entry.username?.[0] ?? "?"}</AvatarFallback>
+                                                                </Avatar>
+                                                                <span className="font-semibold group-hover:text-primary transition-colors">{entry.username}</span>
+                                                            </Link>
+                                                        </TableCell>
+                                                        <TableCell className="hidden md:table-cell">
+                                                            <div className="flex gap-2">
+                                                                <Badge variant="secondary" className="text-xs bg-cyan-500/10 text-cyan-500 hover:bg-cyan-500/20">
+                                                                    Cap #{entry.ranks.pokedex}
+                                                                </Badge>
+                                                                <Badge variant="secondary" className="text-xs bg-amber-500/10 text-amber-500 hover:bg-amber-500/20">
+                                                                    Shiny #{entry.ranks.shiny}
+                                                                </Badge>
+                                                                <Badge variant="secondary" className="text-xs bg-red-500/10 text-red-500 hover:bg-red-500/20">
+                                                                    Battle #{entry.ranks.battles}
+                                                                </Badge>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="text-right font-mono font-bold text-indigo-500">
+                                                            {entry.academyScore.toFixed(2)}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
                                     </div>
                                 )}
 
-                                {top3[2] && (
-                                    <div className="flex flex-col items-center gap-2 animate-in slide-in-from-bottom-8 fade-in duration-700 delay-200">
-                                        <PodiumAvatar entry={top3[2]} rank={3} color="text-amber-700" ring="ring-amber-700" />
-                                        <div className="h-24 w-20 sm:w-32 bg-amber-700/10 rounded-t-lg border-t border-amber-700/30 flex items-center justify-center relative">
-                                            <span className="text-4xl font-black text-amber-700/20 absolute -bottom-4">3</span>
-                                        </div>
+                                {academyData.length === 0 && (
+                                    <div className="text-center py-12 text-muted-foreground">
+                                        No data available for Academy Rank yet.
                                     </div>
                                 )}
-                            </div>
-                        )}
+                            </>
+                        ) : (
+                            <>
+                                {top3.length > 0 && (
+                                    <div className="relative flex items-end justify-center gap-4 sm:gap-8 h-80 pt-10 text-center">
+                                        {top3[1] && (
+                                            <div className="flex flex-col items-center gap-2 animate-in slide-in-from-bottom-8 fade-in duration-700 delay-100">
+                                                <PodiumAvatar entry={top3[1]} rank={2} color="text-slate-400" ring="ring-slate-400" />
+                                                <div className="h-32 w-20 sm:w-32 bg-slate-400/10 rounded-t-lg border-t border-slate-400/30 flex items-center justify-center relative">
+                                                    <span className="text-4xl font-black text-slate-400/20 absolute -bottom-4">2</span>
+                                                </div>
+                                            </div>
+                                        )}
 
-                        {rest.length > 0 && (
-                            <div className="rounded-md border animate-in fade-in duration-700 delay-300">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead className="w-12 text-center">#</TableHead>
-                                            <TableHead>Trainer</TableHead>
-                                            <TableHead className="text-right">Score</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {rest.map((entry, index) => (
-                                            <TableRow key={entry.uuid} className="hover:bg-muted/50 transition-colors">
-                                                <TableCell className="text-center font-medium text-muted-foreground w-12">
-                                                    {index + 4}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Link to={`/players/${entry.uuid}`} className="flex items-center gap-3 hover:underline group">
-                                                        <Avatar className="h-8 w-8">
-                                                            <AvatarImage src={`https://minotar.net/avatar/${entry.name}`} />
-                                                            <AvatarFallback>{entry.name?.[0] ?? "?"}</AvatarFallback>
-                                                        </Avatar>
-                                                        <span className="font-semibold group-hover:text-primary transition-colors">{entry.name}</span>
-                                                    </Link>
-                                                </TableCell>
-                                                <TableCell className="text-right font-mono font-medium">
-                                                    {entry.value.toLocaleString()}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </div>
-                        )}
+                                        {top3[0] && (
+                                            <div className="flex flex-col items-center gap-2 z-10 -mt-8">
+                                                <div className="absolute -top-12">
+                                                    <Crown className="h-8 w-8 text-primary animate-bounce fill-primary/20" />
+                                                </div>
+                                                <PodiumAvatar entry={top3[0]} rank={1} color="text-yellow-500" ring="ring-yellow-500" size="large" />
+                                                <div className="h-48 w-24 sm:w-40 bg-yellow-500/10 rounded-t-lg border-t border-yellow-500/30 flex items-center justify-center relative shadow-[0_0_30px_-10px_rgba(234,179,8,0.4)]">
+                                                    <span className="text-6xl font-black text-yellow-500/20 absolute -bottom-4">1</span>
+                                                </div>
+                                            </div>
+                                        )}
 
-                        {data.length === 0 && (
-                            <div className="text-center py-12 text-muted-foreground">
-                                No data available for this category yet.
-                            </div>
+                                        {top3[2] && (
+                                            <div className="flex flex-col items-center gap-2 animate-in slide-in-from-bottom-8 fade-in duration-700 delay-200">
+                                                <PodiumAvatar entry={top3[2]} rank={3} color="text-amber-700" ring="ring-amber-700" />
+                                                <div className="h-24 w-20 sm:w-32 bg-amber-700/10 rounded-t-lg border-t border-amber-700/30 flex items-center justify-center relative">
+                                                    <span className="text-4xl font-black text-amber-700/20 absolute -bottom-4">3</span>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {rest.length > 0 && (
+                                    <div className="rounded-md border animate-in fade-in duration-700 delay-300">
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead className="w-12 text-center">#</TableHead>
+                                                    <TableHead>Trainer</TableHead>
+                                                    <TableHead className="text-right">Score</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {rest.map((entry, index) => (
+                                                    <TableRow key={entry.uuid} className="hover:bg-muted/50 transition-colors">
+                                                        <TableCell className="text-center font-medium text-muted-foreground w-12">
+                                                            {index + 4}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Link to={`/players/${entry.uuid}`} className="flex items-center gap-3 hover:underline group">
+                                                                <Avatar className="h-8 w-8">
+                                                                    <AvatarImage src={`https://minotar.net/avatar/${entry.name}`} />
+                                                                    <AvatarFallback>{entry.name?.[0] ?? "?"}</AvatarFallback>
+                                                                </Avatar>
+                                                                <span className="font-semibold group-hover:text-primary transition-colors">{entry.name}</span>
+                                                            </Link>
+                                                        </TableCell>
+                                                        <TableCell className="text-right font-mono font-medium">
+                                                            {entry.value.toLocaleString()}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                )}
+
+                                {data.length === 0 && (
+                                    <div className="text-center py-12 text-muted-foreground">
+                                        No data available for this category yet.
+                                    </div>
+                                )}
+                            </>
                         )}
                     </TabsContent>
                 )}

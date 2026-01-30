@@ -81,6 +81,28 @@ export const api = {
         }
     },
 
+    getAcademyLeaderboard: async (limit = 100): Promise<AcademyRankEntry[]> => {
+        try {
+            const res = await fetch(`${BASE_URL}/leaderboards/academy?limit=${limit}`);
+            if (!res.ok) return [];
+            return await res.json();
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    },
+
+    getPlayerRank: async (uuid: string): Promise<AcademyRankEntry | null> => {
+        try {
+            const res = await fetch(`${BASE_URL}/players/${uuid}/rank`);
+            if (!res.ok) return null;
+            return await res.json();
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    },
+
     getPlayer: async (uuid: string): Promise<PlayerSummary | null> => {
         try {
             const [summaryRes, leaderboard, pokedexRes] = await Promise.all([
@@ -198,6 +220,17 @@ export interface ServerStats {
     topShinies: LeaderboardEntry[];
     recentTrainers: LeaderboardEntry[];
 }
+
+export interface AcademyRankEntry {
+    uuid: string;
+    username: string;
+    academyRank: number;
+    academyScore: number;
+    ranks: Record<string, number>;
+    normalized: Record<string, number>;
+    totalPlayers: number;
+}
+
 
 function stripPrefix(str: string): string {
     return str.replace("cobblemon:", "");
