@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { api, type PlayerSummary, type PlayerPartyMember, type Pokemon } from "../api";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -18,6 +18,13 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { TitleBadge, TitlesSection } from "@/components/titles";
+import {
+    type PlayerTitleData,
+    getPrimaryTitle,
+    getSecondaryTitles,
+} from "@/lib/titles";
+
 
 export default function PlayerProfile() {
     const { uuid } = useParams<{ uuid: string }>();
@@ -75,6 +82,17 @@ export default function PlayerProfile() {
         fetchPC();
     }, [uuid, pcPage, debouncedSearch, isShinyFilter]);
 
+    // Compute player title data - must be before any conditional returns
+    const playerTitleData: PlayerTitleData = useMemo(() => ({
+        totalCaptures: summary?.totalCaptures ?? 0,
+        shinyCount: summary?.shinyCount ?? 0,
+        battlesWon: summary?.battlesWon ?? 0,
+        pokedexCompletion: summary?.pokedexCompletion ?? 0,
+    }), [summary]);
+
+    const primaryTitle = useMemo(() => getPrimaryTitle(playerTitleData), [playerTitleData]);
+    const secondaryTitles = useMemo(() => getSecondaryTitles(playerTitleData, 3), [playerTitleData]);
+
     if (loading) {
         return <ProfileSkeleton />;
     }
@@ -98,6 +116,7 @@ export default function PlayerProfile() {
         );
     }
 
+
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between border-b pb-8">
@@ -109,12 +128,17 @@ export default function PlayerProfile() {
                     <div className="space-y-2">
                         <div className="flex items-center gap-2 flex-wrap">
                             <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{summary.name}</h1>
+                            <TitleBadge title={primaryTitle} size="md" />
+                        </div>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                            {secondaryTitles.map((title) => (
+                                <TitleBadge key={title.id} title={title} size="sm" />
+                            ))}
                             {summary.rank > 0 && summary.rank <= 3 && (
                                 <Badge variant="default" className="bg-primary text-primary-foreground hover:bg-primary/90">
                                     Top {summary.rank}
                                 </Badge>
                             )}
-                            {summary.shinyCount > 10 && <Badge variant="secondary" className="border-amber-500/50 text-amber-600 dark:text-amber-400">Shiny Hunter</Badge>}
                         </div>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground font-mono bg-muted/50 px-2 py-1 rounded w-fit">
                             <span>{summary.uuid}</span>
@@ -241,6 +265,9 @@ export default function PlayerProfile() {
                             </Card>
                         </div>
                     </div>
+
+                    {/* Trainer Titles Grid */}
+                    <TitlesSection playerData={playerTitleData} />
                 </TabsContent>
 
                 <TabsContent value="party" className="space-y-6">
