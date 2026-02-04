@@ -236,13 +236,44 @@ function stripPrefix(str: string): string {
     return str.replace("cobblemon:", "");
 }
 
+const NAME_EXCEPTIONS: Record<string, string> = {
+    "roaringmoon": "roaring-moon",
+    "ironvaliant": "iron-valiant",
+    "walkingwake": "walking-wake",
+    "ironleaves": "iron-leaves",
+    "greattusk": "great-tusk",
+    "screamtail": "scream-tail",
+    "brutebonnet": "brute-bonnet",
+    "fluttermane": "flutter-mane",
+    "slitherwing": "slither-wing",
+    "sandyshocks": "sandy-shocks",
+    "irontreads": "iron-treads",
+    "ironbundle": "iron-bundle",
+    "ironhands": "iron-hands",
+    "ironjugulis": "iron-jugulis",
+    "ironmoth": "iron-moth",
+    "ironthorns": "iron-thorns",
+    "wochien": "wo-chien",
+    "chienpao": "chien-pao",
+    "tinglu": "ting-lu",
+    "chiyu": "chi-yu",
+    "tapukoko": "tapu-koko",
+    "tapulele": "tapu-lele",
+    "tapubulu": "tapu-bulu",
+    "tapufini": "tapu-fini",
+    "typenull": "type-null",
+    "mrrime": "mr-rime",
+    "mrmime": "mr-mime",
+};
+
 function transformBackendPokemon(p: BackendPokemon): Pokemon {
     const rawSpecies = stripPrefix(p.Species);
     const displaySpecies = rawSpecies.charAt(0).toUpperCase() + rawSpecies.slice(1);
     const exactSpecies = stripPrefix(p.Species).toLowerCase();
-    const showdownName = exactSpecies.replace(/[_ ]/g, "");
 
-    const spriteUrl = `https://play.pokemonshowdown.com/sprites/${p.Shiny ? "ani-shiny" : "ani"}/${showdownName}.gif`;
+    const dbName = NAME_EXCEPTIONS[exactSpecies] || exactSpecies.replace(/[_ ]/g, "-");
+
+    const spriteUrl = `https://img.pokemondb.net/sprites/home/${p.Shiny ? "shiny" : "normal"}/${dbName}.png`;
 
     return {
         species: displaySpecies,
