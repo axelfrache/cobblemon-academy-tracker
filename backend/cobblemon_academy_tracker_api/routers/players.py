@@ -25,7 +25,7 @@ async def get_player_summary(uuid: str):
     player_doc["username"] = real_username
 
     shiny_count = 0
-    
+
     party_collection = get_collection("PlayerPartyCollection")
     party_doc = await party_collection.find_one({"uuid": uuid})
     if party_doc:
@@ -37,16 +37,16 @@ async def get_player_summary(uuid: str):
     pc_collection = get_collection("PCCollection")
     pc_doc = await pc_collection.find_one({"uuid": uuid})
     if pc_doc:
-         for key, val in pc_doc.items():
+        for key, val in pc_doc.items():
             if key.startswith("Box") and isinstance(val, dict):
                 for slot, poke in val.items():
-                     if slot.startswith("Slot") and isinstance(poke, dict):
-                          if poke.get("Shiny"):
-                              shiny_count += 1
+                    if slot.startswith("Slot") and isinstance(poke, dict):
+                        if poke.get("Shiny"):
+                            shiny_count += 1
 
     if "advancementData" not in player_doc:
         player_doc["advancementData"] = {}
-    
+
     player_doc["advancementData"]["totalShinyCaptureCount"] = shiny_count
 
     return PlayerSummary(**player_doc)
