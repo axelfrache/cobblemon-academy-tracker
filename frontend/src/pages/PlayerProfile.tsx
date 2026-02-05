@@ -23,7 +23,6 @@ import { TitleBadge, TitlesSection } from "@/components/titles";
 import {
     type PlayerTitleData,
     getPrimaryTitle,
-    getSecondaryTitles,
 } from "@/lib/titles";
 
 
@@ -103,7 +102,6 @@ export default function PlayerProfile() {
     }), [summary]);
 
     const primaryTitle = useMemo(() => getPrimaryTitle(playerTitleData), [playerTitleData]);
-    const secondaryTitles = useMemo(() => getSecondaryTitles(playerTitleData, 3), [playerTitleData]);
 
     if (loading) {
         return <ProfileSkeleton />;
@@ -166,14 +164,7 @@ export default function PlayerProfile() {
                                 />
                             )}
 
-                            {/* Secondary Badges */}
-                            {secondaryTitles.map((title) => (
-                                <TitleBadge
-                                    key={title.id}
-                                    title={title}
-                                    variant="secondary"
-                                />
-                            ))}
+
                         </div>
 
                         <div className="flex items-center gap-2 text-sm text-muted-foreground font-mono bg-muted/50 px-2 py-1 rounded w-fit">
