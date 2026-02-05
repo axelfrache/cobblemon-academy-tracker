@@ -114,7 +114,7 @@ async def get_leaderboard(category: str, limit: int = 10):
 
 
 ACADEMY_CACHE: Dict = {"data": None, "expires_at": datetime.min}
-CACHE_TTL_SECONDS = 300
+CACHE_TTL_SECONDS = 60
 
 
 async def get_cached_academy_ranks() -> List[AcademyRankEntry]:
