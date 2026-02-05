@@ -7,7 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Copy, Sparkles, Swords, Search, Star, BookOpen, GraduationCap, type LucideIcon } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+
 import { api, type PlayerSummary, type PlayerPartyMember, type Pokemon, type AcademyRankEntry } from "../api";
 import { cn, getAvatarUrl } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -137,55 +137,45 @@ export default function PlayerProfile() {
                         <AvatarImage src={getAvatarUrl(summary.name ?? summary.uuid)} />
                         <AvatarFallback>{summary.name?.[0] ?? "?"}</AvatarFallback>
                     </Avatar>
-                    <div className="space-y-2">
-                        <div className="flex items-center gap-2 flex-wrap">
-                            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{summary.name}</h1>
-                            <TitleBadge title={primaryTitle} size="md" />
-                        </div>
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                            {secondaryTitles.map((title) => (
-                                <TitleBadge key={title.id} title={title} size="sm" />
-                            ))}
+                    <div className="space-y-3">
+                        {/* Name */}
+                        <h1 className="text-3xl md:text-5xl font-bold tracking-tight">{summary.name}</h1>
+
+                        {/* Titles Row */}
+                        <div className="flex flex-wrap items-center gap-2">
+                            {/* Major: Primary Title */}
+                            <TitleBadge title={primaryTitle} variant="major" />
+
+                            {/* Major: Server Rank */}
                             {rankData && (
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Badge variant="outline" className="bg-indigo-500/10 text-indigo-600 border-indigo-200 hover:bg-indigo-500/20 cursor-pointer flex gap-1 items-center">
-                                            <GraduationCap className="h-3 w-3" />
-                                            Server Rank #{rankData.academyRank}
-                                        </Badge>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-80">
-                                        <div className="space-y-4">
-                                            <div className="flex justify-between items-center">
-                                                <h4 className="font-semibold leading-none">Academy Score</h4>
-                                                <span className="text-xl font-bold text-indigo-600">{rankData.academyScore.toFixed(2)}</span>
-                                            </div>
-                                            <div className="text-sm text-muted-foreground">
-                                                Based on weighted performance across statistics:
-                                            </div>
-                                            <div className="grid gap-2">
-                                                <div className="flex justify-between text-sm">
-                                                    <span>Pokédex (35%)</span>
-                                                    <span className="font-medium">#{rankData.ranks.pokedex}</span>
-                                                </div>
-                                                <div className="flex justify-between text-sm">
-                                                    <span>Shiny Dex (30%)</span>
-                                                    <span className="font-medium">#{rankData.ranks.shiny}</span>
-                                                </div>
-                                                <div className="flex justify-between text-sm">
-                                                    <span>Battles (25%)</span>
-                                                    <span className="font-medium">#{rankData.ranks.battles}</span>
-                                                </div>
-                                                <div className="flex justify-between text-sm">
-                                                    <span>Eggs (10%)</span>
-                                                    <span className="font-medium">#{rankData.ranks.eggs}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </PopoverContent>
-                                </Popover>
+                                <TitleBadge
+                                    variant="major"
+                                    title={{
+                                        id: "server-rank",
+                                        name: `Server Rank #${rankData.academyRank}`,
+                                        shortLabel: `#${rankData.academyRank}`,
+                                        description: `Ranked #${rankData.academyRank} on the server based on overall performance.`,
+                                        icon: GraduationCap,
+                                        tone: "blue",
+                                        rarity: "Legendary",
+                                        priority: 1000,
+                                        displayRule: "Your global server ranking.",
+                                        compute: () => true,
+                                        progress: () => ({ current: 1, target: 1, pct: 100 })
+                                    }}
+                                />
                             )}
+
+                            {/* Secondary Badges */}
+                            {secondaryTitles.map((title) => (
+                                <TitleBadge
+                                    key={title.id}
+                                    title={title}
+                                    variant="secondary"
+                                />
+                            ))}
                         </div>
+
                         <div className="flex items-center gap-2 text-sm text-muted-foreground font-mono bg-muted/50 px-2 py-1 rounded w-fit">
                             <span>{summary.uuid}</span>
                             <Button variant="ghost" size="icon" className="h-4 w-4" onClick={() => navigator.clipboard.writeText(summary.uuid)}>
