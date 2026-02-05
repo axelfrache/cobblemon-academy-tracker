@@ -36,8 +36,9 @@ class Move(BaseModel):
 
 class Ability(BaseModel):
     AbilityName: str
-    AbilityIndex: int
+    AbilityIndex: Optional[int] = None
     AbilityPriority: Optional[str] = None
+    AbilityForced: Optional[bool] = None
 
 
 class Pokemon(BaseModel):
