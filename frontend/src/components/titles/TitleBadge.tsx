@@ -63,10 +63,10 @@ export function TitleBadge({
                         {showLabel && (
                             <span
                                 className={cn(
-                                    earned ? rarityStyle.text : "text-muted-foreground"
+                                    earned ? toneColor : "text-muted-foreground"
                                 )}
                             >
-                                {title.shortLabel}
+                                {title.name}
                             </span>
                         )}
                     </div>
