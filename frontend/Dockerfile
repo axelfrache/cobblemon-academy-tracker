@@ -1,6 +1,8 @@
 FROM node:20-alpine as build
 WORKDIR /app
 COPY package*.json ./
+ARG VITE_MINECRAFT_SERVER_IP
+ENV VITE_MINECRAFT_SERVER_IP=$VITE_MINECRAFT_SERVER_IP
 RUN npm ci
 COPY . .
 RUN npm run build

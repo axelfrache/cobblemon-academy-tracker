@@ -12,6 +12,8 @@ services:
   frontend:
     build:
       context: ./frontend
+      args:
+        - VITE_MINECRAFT_SERVER_IP=${VITE_MINECRAFT_SERVER_IP}
     container_name: cobblemon-frontend
     ports:
       - "8080:80"

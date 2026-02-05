@@ -24,6 +24,18 @@ export default function Dashboard() {
     const [loading, setLoading] = useState(true);
     const [recentSearches, setRecentSearches] = useState<{ name: string, uuid: string, date: number }[]>([]);
 
+    const serverIp = import.meta.env.VITE_MINECRAFT_SERVER_IP;
+    const [serverStatus, setServerStatus] = useState<{ online: boolean, players: { online: number, max: number }, motd?: { html: string[] } } | null>(null);
+
+    useEffect(() => {
+        if (serverIp) {
+            fetch(`https://api.mcsrvstat.us/3/${serverIp}`)
+                .then(res => res.json())
+                .then(data => setServerStatus(data))
+                .catch(err => console.error("Failed to fetch server status", err));
+        }
+    }, [serverIp]);
+
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
@@ -39,7 +51,7 @@ export default function Dashboard() {
         }
     }, []);
 
-    const StatsCard = ({ title, value, icon: Icon, subtext, color }: { title: string, value: string | number, icon: LucideIcon, subtext?: string, color?: string }) => (
+    const StatsCard = ({ title, value, icon: Icon, subtext, color }: { title: string, value: string | number | React.ReactNode, icon: LucideIcon, subtext?: string, color?: string }) => (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">{title}</CardTitle>
@@ -73,13 +85,39 @@ export default function Dashboard() {
 
             {/* Top KPIs */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <StatsCard
-                    title="Active Trainers"
-                    value={stats?.activeTrainers ?? 0}
-                    icon={Users}
-                    subtext="Registered across leaderboards"
-                    color="text-blue-500"
-                />
+                {serverIp ? (
+                    /* Live Server Status Card */
+                    <StatsCard
+                        title="Server Status"
+                        value={
+                            serverStatus ? (
+                                <div className="flex items-center gap-2">
+                                    <span className={cn("relative flex h-3 w-3")}>
+                                        <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75", serverStatus.online ? "bg-green-400" : "bg-red-400")}></span>
+                                        <span className={cn("relative inline-flex rounded-full h-3 w-3", serverStatus.online ? "bg-green-500" : "bg-red-500")}></span>
+                                    </span>
+                                    <span>{serverStatus.players.online}</span>
+                                    <span className="text-muted-foreground text-lg font-medium">/ {serverStatus.players.max}</span>
+                                </div>
+                            ) : (
+                                "Connecting..."
+                            )
+                        }
+                        icon={Activity}
+                        subtext={serverStatus?.online ? "Players Online" : "Server Offline"}
+                        color={serverStatus?.online ? "text-green-500" : "text-red-500"}
+                    />
+                ) : (
+                    /* Default: Active Trainers */
+                    <StatsCard
+                        title="Active Trainers"
+                        value={stats?.activeTrainers ?? 0}
+                        icon={Users}
+                        subtext="Registered across leaderboards"
+                        color="text-blue-500"
+                    />
+                )}
+
                 <StatsCard
                     title="Total Captures"
                     value={stats?.totalCaptures.toLocaleString() ?? 0}
