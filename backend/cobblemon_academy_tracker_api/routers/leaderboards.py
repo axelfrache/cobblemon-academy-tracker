@@ -64,7 +64,31 @@ async def get_leaderboard(category: str, limit: int = 10):
     if category == "captures":
         sort_field = "advancementData.totalCaptureCount"
     elif category == "battles":
-        sort_field = "advancementData.totalBattleVictoryCount"
+        pipeline = [
+            {
+                "$project": {
+                    "uuid": 1,
+                    "value": {
+                        "$add": [
+                            {
+                                "$ifNull": [
+                                    "$advancementData.totalPvPBattleVictoryCount",
+                                    0,
+                                ]
+                            },
+                            {
+                                "$ifNull": [
+                                    "$advancementData.totalPvNBattleVictoryCount",
+                                    0,
+                                ]
+                            },
+                        ]
+                    },
+                }
+            },
+            {"$sort": {"value": -1}},
+            {"$limit": limit},
+        ]
     elif category == "breeders":
         sort_field = "advancementData.totalEggsHatched"
     elif category == "aspects":
@@ -72,27 +96,28 @@ async def get_leaderboard(category: str, limit: int = 10):
     else:
         return []
 
-    pipeline = []
-
-    if category == "aspects":
-        pipeline = [
-            {
-                "$project": {
-                    "uuid": 1,
-                    "value": {
-                        "$size": {"$objectToArray": "$advancementData.aspectsCollected"}
-                    },
-                }
-            },
-            {"$sort": {"value": -1}},
-            {"$limit": limit},
-        ]
-    else:
-        pipeline = [
-            {"$sort": {sort_field: -1}},
-            {"$limit": limit},
-            {"$project": {"uuid": 1, "value": f"${sort_field}"}},
-        ]
+    if not pipeline:
+        if category == "aspects":
+            pipeline = [
+                {
+                    "$project": {
+                        "uuid": 1,
+                        "value": {
+                            "$size": {
+                                "$objectToArray": "$advancementData.aspectsCollected"
+                            }
+                        },
+                    }
+                },
+                {"$sort": {"value": -1}},
+                {"$limit": limit},
+            ]
+        else:
+            pipeline = [
+                {"$sort": {sort_field: -1}},
+                {"$limit": limit},
+                {"$project": {"uuid": 1, "value": f"${sort_field}"}},
+            ]
 
     cursor = collection.aggregate(pipeline)
 
@@ -142,9 +167,7 @@ async def calculate_academy_ranks() -> List[AcademyRankEntry]:
 
     pokedex_scores = await _get_all_pokedex_scores()
     shiny_scores = await _get_all_shiny_scores()
-    battle_scores = await _get_all_basic_scores(
-        "advancementData.totalBattleVictoryCount"
-    )
+    battle_scores = await _get_all_battle_scores()
     egg_scores = await _get_all_basic_scores("advancementData.totalEggsHatched")
 
     all_uuids = (
@@ -248,6 +271,40 @@ async def _get_all_basic_scores(field_path: str) -> Dict[str, float]:
     collection = get_collection("PlayerDataCollection")
     cursor = collection.aggregate(
         [{"$project": {"uuid": 1, "value": f"${field_path}"}}]
+    )
+    scores = {}
+    async for doc in cursor:
+        scores[doc["uuid"]] = float(doc.get("value", 0))
+    return scores
+
+
+async def _get_all_battle_scores() -> Dict[str, float]:
+    """Get battle scores using PvP + PvN (excluding PvW - wild battles)"""
+    collection = get_collection("PlayerDataCollection")
+    cursor = collection.aggregate(
+        [
+            {
+                "$project": {
+                    "uuid": 1,
+                    "value": {
+                        "$add": [
+                            {
+                                "$ifNull": [
+                                    "$advancementData.totalPvPBattleVictoryCount",
+                                    0,
+                                ]
+                            },
+                            {
+                                "$ifNull": [
+                                    "$advancementData.totalPvNBattleVictoryCount",
+                                    0,
+                                ]
+                            },
+                        ]
+                    },
+                }
+            }
+        ]
     )
     scores = {}
     async for doc in cursor:

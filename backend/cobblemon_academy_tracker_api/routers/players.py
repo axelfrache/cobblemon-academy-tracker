@@ -49,6 +49,11 @@ async def get_player_summary(uuid: str):
 
     player_doc["advancementData"]["totalShinyCaptureCount"] = shiny_count
 
+    advancement_data = player_doc.get("advancementData", {})
+    pvp_wins = advancement_data.get("totalPvPBattleVictoryCount", 0)
+    pvn_wins = advancement_data.get("totalPvNBattleVictoryCount", 0)
+    player_doc["advancementData"]["totalBattleVictoryCount"] = pvp_wins + pvn_wins
+
     return PlayerSummary(**player_doc)
 
 
