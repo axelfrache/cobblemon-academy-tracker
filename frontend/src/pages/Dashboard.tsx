@@ -13,7 +13,6 @@ import {
     Users,
     Trophy,
     Activity,
-    Clock,
     type LucideIcon,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -229,10 +228,6 @@ export default function Dashboard() {
                                                 <p className="text-sm font-medium leading-none group-hover:text-primary transition-colors">{trainer.name}</p>
                                                 <p className="text-xs text-muted-foreground mt-1">Rank #{trainer.rank}</p>
                                             </div>
-                                        </div>
-                                        <div className="flex items-center text-xs text-muted-foreground">
-                                            <Clock className="mr-1 h-3 w-3" />
-                                            Active
                                         </div>
                                     </Link>
                                 ))}

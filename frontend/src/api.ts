@@ -175,10 +175,11 @@ export const api = {
 
     getServerStats: async () => {
         try {
-            const [captures, shiny, battles] = await Promise.all([
+            const [captures, shiny, battles, academy] = await Promise.all([
                 api.getLeaderboard("captures"),
                 api.getLeaderboard("shiny"),
-                api.getLeaderboard("battles")
+                api.getLeaderboard("battles"),
+                api.getAcademyLeaderboard(10)
             ]);
 
             const totalCaptures = captures.reduce((acc, curr) => acc + curr.value, 0);
@@ -190,13 +191,21 @@ export const api = {
                 ...battles.map(e => e.uuid)
             ]).size;
 
+            const featuredTrainers: LeaderboardEntry[] = academy.map(entry => ({
+                uuid: entry.uuid,
+                name: entry.username || "Unknown",
+                value: entry.academyScore,
+                avatar: `https://minotar.net/avatar/${entry.username || 'steve'}`,
+                rank: entry.academyRank
+            }));
+
             return {
                 totalCaptures,
                 totalShinies,
                 totalBattles,
                 activeTrainers,
                 topShinies: shiny.slice(0, 5),
-                recentTrainers: captures.slice(0, 10),
+                recentTrainers: featuredTrainers,
             };
         } catch (error) {
             console.error(error);
