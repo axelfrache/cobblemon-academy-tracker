@@ -60,6 +60,7 @@ async def get_leaderboard(category: str, limit: int = 10):
     collection = get_collection("PlayerDataCollection")
 
     sort_field = ""
+    pipeline = None
 
     if category == "captures":
         sort_field = "advancementData.totalCaptureCount"
