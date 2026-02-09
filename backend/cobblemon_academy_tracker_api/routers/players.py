@@ -130,41 +130,43 @@ async def get_player_pc(
 async def get_player_pokedex(uuid: str):
     from cobblemon_academy_tracker_api.constants import TOTAL_COBBLEMON_SPECIES
 
-    party_collection = get_collection("PlayerPartyCollection")
-    pc_collection = get_collection("PCCollection")
+    pokedex_collection = get_collection("PokeDexCollection")
+    pokedex_doc = await pokedex_collection.find_one({"uuid": uuid})
 
-    owned_species: set[str] = set()
+    if not pokedex_doc:
+        return PokedexStats(
+            total_seen=0,
+            total_caught=0,
+            completion_percentage=0.0,
+        )
 
-    party_doc = await party_collection.find_one({"uuid": uuid})
-    if party_doc:
-        for i in range(6):
-            slot_key = f"Slot{i}"
-            if slot_key in party_doc and party_doc[slot_key]:
-                species = party_doc[slot_key].get("Species")
-                if species:
-                    owned_species.add(species.lower())
+    species_records = pokedex_doc.get("speciesRecords", {})
 
-    pc_doc = await pc_collection.find_one({"uuid": uuid})
-    if pc_doc:
-        box_count = pc_doc.get("BoxCount", 50)
-        for box_idx in range(box_count):
-            box_key = f"Box{box_idx}"
-            box_data = pc_doc.get(box_key, {})
-            if not box_data:
-                continue
-            for slot_key, pokemon_data in box_data.items():
-                if not slot_key.startswith("Slot"):
-                    continue
-                if isinstance(pokemon_data, dict):
-                    species = pokemon_data.get("Species")
-                    if species:
-                        owned_species.add(species.lower())
+    total_seen = 0
+    total_caught = 0
 
-    total_caught = len(owned_species)
+    for species_name, species_data in species_records.items():
+        form_records = species_data.get("formRecords", {})
+        has_caught = False
+        has_seen = False
+
+        for form_name, form_data in form_records.items():
+            knowledge = form_data.get("knowledge", "")
+            if knowledge == "CAUGHT":
+                has_caught = True
+                has_seen = True
+            elif knowledge == "ENCOUNTERED":
+                has_seen = True
+
+        if has_seen:
+            total_seen += 1
+        if has_caught:
+            total_caught += 1
+
     completion_percentage = round((total_caught / TOTAL_COBBLEMON_SPECIES) * 100, 2)
 
     return PokedexStats(
-        total_seen=total_caught,
+        total_seen=total_seen,
         total_caught=total_caught,
         completion_percentage=completion_percentage,
     )

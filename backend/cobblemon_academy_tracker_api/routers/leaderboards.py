@@ -314,37 +314,27 @@ async def _get_all_battle_scores() -> Dict[str, float]:
 
 
 async def _scan_collections_for_pokedex() -> Dict[str, int]:
-    party_collection = get_collection("PlayerPartyCollection")
-    pc_collection = get_collection("PCCollection")
-    player_species: dict[str, set[str]] = {}
+    pokedex_collection = get_collection("PokeDexCollection")
+    player_caught_count: dict[str, int] = {}
 
-    async for doc in party_collection.find({}):
+    async for doc in pokedex_collection.find({}):
         uuid = doc.get("uuid")
         if not uuid:
             continue
-        if uuid not in player_species:
-            player_species[uuid] = set()
-        for i in range(6):
-            slot = doc.get(f"Slot{i}")
-            if slot and "Species" in slot:
-                player_species[uuid].add(slot["Species"].lower())
 
-    async for doc in pc_collection.find({}):
-        uuid = doc.get("uuid")
-        if not uuid:
-            continue
-        if uuid not in player_species:
-            player_species[uuid] = set()
+        species_records = doc.get("speciesRecords", {})
+        caught_count = 0
 
-        for key, val in doc.items():
-            if key.startswith("Box") and isinstance(val, dict):
-                for slot_key, pokemon in val.items():
-                    if slot_key.startswith("Slot") and isinstance(pokemon, dict):
-                        s = pokemon.get("Species")
-                        if s:
-                            player_species[uuid].add(s.lower())
+        for species_name, species_data in species_records.items():
+            form_records = species_data.get("formRecords", {})
+            for form_name, form_data in form_records.items():
+                if form_data.get("knowledge") == "CAUGHT":
+                    caught_count += 1
+                    break  # Count species only once even if multiple forms are caught
 
-    return {k: len(v) for k, v in player_species.items()}
+        player_caught_count[uuid] = caught_count
+
+    return player_caught_count
 
 
 async def _scan_collections_for_shiny() -> Dict[str, int]:
