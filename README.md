@@ -19,6 +19,38 @@
 - **Competitive Focus**: Detailed leaderboards for Shiny Hunters, Battlers, and Collectors.
 - **Privacy & Security**: Secure read-only integration via standardized APIs.
 
+## Interface Overview
+
+The Cobblemon Academy Tracker UI is designed to provide a clear competitive overview at a glance,
+while allowing deep inspection of each trainer's progression.
+
+### Global Dashboard
+
+The dashboard gives a real-time overview of server activity:
+player counts, capture statistics, and competitive trends.
+
+<p align="center">
+  <img src="docs/screenshots/dashboard.png" alt="Global dashboard overview" width="90%">
+</p>
+
+### Leaderboards
+
+Dedicated leaderboards highlight the most active and competitive players,
+including shiny hunters, collectors, and battlers.
+
+<p align="center">
+  <img src="docs/screenshots/leaderboard.png" alt="Leaderboards view" width="90%">
+</p>
+
+### Player Profile
+
+Each player profile provides detailed analytics:
+party composition, PC progression, shiny count, and historical trends.
+
+<p align="center">
+  <img src="docs/screenshots/profile.png" alt="Player profile analytics" width="90%">
+</p>
+
 ## Getting Started
 
 The application is divided into 2 parts:
