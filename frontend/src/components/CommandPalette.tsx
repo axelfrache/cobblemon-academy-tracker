@@ -16,7 +16,6 @@ import {
     Sparkles,
     Swords,
     BookOpen,
-    Egg,
     User,
     Loader2,
     GraduationCap,
@@ -97,7 +96,6 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         { name: "Battle Wins", path: "/leaderboards?tab=battles", icon: Swords, color: "text-red-500" },
         { name: "Shiny Hunters", path: "/leaderboards?tab=shiny", icon: Sparkles, color: "text-amber-500" },
         { name: "Total Captures", path: "/leaderboards?tab=captures", icon: Trophy, color: "text-cyan-500" },
-        { name: "Eggs Hatched", path: "/leaderboards?tab=breeders", icon: Egg, color: "text-green-500" },
     ];
 
     return (

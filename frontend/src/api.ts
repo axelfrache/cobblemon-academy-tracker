@@ -62,7 +62,7 @@ interface BackendPokemon {
 }
 
 export const api = {
-    getLeaderboard: async (category: "shiny" | "captures" | "battles" | "breeders" | "pokedex"): Promise<LeaderboardEntry[]> => {
+    getLeaderboard: async (category: "shiny" | "captures" | "battles" | "pokedex"): Promise<LeaderboardEntry[]> => {
         try {
             const res = await fetch(`${BASE_URL}/leaderboards/${category}`);
             if (!res.ok) throw new Error("Failed to fetch leaderboard");

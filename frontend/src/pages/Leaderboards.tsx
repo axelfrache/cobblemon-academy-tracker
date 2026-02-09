@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { api, type LeaderboardEntry, type AcademyRankEntry } from "../api";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Crown, Sparkles, Swords, Trophy, Egg, BookOpen, GraduationCap } from "lucide-react";
+import { Crown, Sparkles, Swords, Trophy, BookOpen, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useSearchParams } from "react-router-dom";
@@ -15,7 +15,6 @@ const categories = {
     battles: { label: "Battle Wins", icon: Swords, color: "text-red-500", bg: "bg-red-500" },
     shiny: { label: "Shiny Dex", icon: Sparkles, color: "text-amber-500", bg: "bg-amber-500" },
     captures: { label: "Total Captures", icon: Trophy, color: "text-cyan-500", bg: "bg-cyan-500" },
-    breeders: { label: "Eggs Hatched", icon: Egg, color: "text-green-500", bg: "bg-green-500" },
 };
 
 type CategoryKey = keyof typeof categories;
